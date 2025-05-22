@@ -3,57 +3,35 @@ const jwtConfig = require('../config/jwt.config');
 const User = require('../models/userModel');
 
 /**
- * Middleware to verify JWT token and attach user to request
+ * Authentication middleware
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  * @param {Function} next - Express next middleware function
  */
 const authenticate = async (req, res, next) => {
   try {
-    // Get token from header
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        success: false,
-        message: 'No token provided'
-      });
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Please provide authentication token' });
     }
 
-    // Extract token
-    const token = authHeader.split(' ')[1];
-
-    // Verify token
     const decoded = jwt.verify(token, jwtConfig.secret);
-
-    // Find user
-    const user = await User.findById(decoded.userId).select('-password');
+    const user = await User.findById(decoded.userId);
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'User not found'
-      });
+      return res.status(401).json({ success: false, message: 'User does not exist' });
     }
 
-    // Attach user to request
     req.user = user;
+    console.log('authMiddleware - req.user:', {
+      id: req.user._id,
+      email: req.user.email,
+      role: req.user.role
+    });
     next();
   } catch (error) {
-    if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid token'
-      });
-    }
-    if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({
-        success: false,
-        message: 'Token expired'
-      });
-    }
-    next(error);
+    console.error('Authentication error:', error);
+    res.status(401).json({ success: false, message: 'Authentication failed' });
   }
 };
 
-module.exports = {
-  authenticate
-}; 
+module.exports = { authenticate }; 

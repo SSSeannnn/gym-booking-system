@@ -15,14 +15,19 @@ const register = async (req, res, next) => {
     };
 
     const user = await registerUser(userData);
+    // 注册成功后，调用 loginUser 生成 token
+    const result = await loginUser(userData.email, userData.password);
     
     res.status(201).json({
       success: true,
       message: '注册成功',
-      data: user
+      data: { user, token: result.token }
     });
   } catch (error) {
-    next(error);
+    res.status(400).json({
+      success: false,
+      message: error.message || '注册失败'
+    });
   }
 };
 
@@ -51,7 +56,17 @@ const login = async (req, res, next) => {
       data: result
     });
   } catch (error) {
-    next(error);
+    // 密码错误或用户不存在时返回 401
+    if (error.message === '密码错误' || error.message === '用户不存在') {
+      return res.status(401).json({
+        success: false,
+        message: error.message
+      });
+    }
+    res.status(400).json({
+      success: false,
+      message: error.message || '登录失败'
+    });
   }
 };
 

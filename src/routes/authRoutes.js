@@ -3,10 +3,11 @@ const router = express.Router();
 const { register, login } = require('../controllers/authController');
 const { authenticate } = require('../middlewares/authMiddleware');
 const { authorize } = require('../middlewares/roleMiddleware');
+const { validateRequest, schemas } = require('../middlewares/validateRequest');
 
 // Public routes
-router.post('/register', register);
-router.post('/login', login);
+router.post('/register', validateRequest(schemas.register), register);
+router.post('/login', validateRequest(schemas.login), login);
 
 // Protected test route
 router.get('/protected', authenticate, (req, res) => {
