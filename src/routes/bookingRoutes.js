@@ -29,4 +29,11 @@ router.put('/:id/cancel', authorize(['customer']), cancelBookingHandler);
 // Get specific booking details
 router.get('/:id', getBookingByIdHandler);
 
+/**
+ * @route DELETE /api/bookings/:bookingId
+ * @desc 取消预约
+ * @access Private
+ */
+router.delete('/:bookingId', cancelBookingHandler);
+
 module.exports = router; 

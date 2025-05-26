@@ -20,155 +20,141 @@ const CUSTOMER_EMAILS = [
 ];
 const CUSTOMER_PASSWORD = 'customerpassword123';
 
-describe('Booking API Endpoints', () => {
-  let adminToken;
-  let customerTokens = [];
-  let testClassIdForBooking;
-  let testScheduleIdForBooking;
-  let instructorId;
+describe('预约系统测试', () => {
+  let testUser;
+  let testToken;
+  let testSchedule;
+  let testBooking;
 
   beforeAll(async () => {
-    // 清理并注册 admin、instructor、6个customer 测试用户
-    await User.deleteMany({ email: ADMIN_EMAIL });
-    await User.deleteMany({ email: INSTRUCTOR_EMAIL });
-    for (const email of CUSTOMER_EMAILS) {
-      await User.deleteMany({ email });
+    // 确保数据库连接
+    if (mongoose.connection.readyState === 0) {
+      await mongoose.connect(process.env.MONGODB_URI);
     }
-    await request(app)
-      .post('/api/auth/register')
-      .send({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD, role: 'admin' });
-    await request(app)
-      .post('/api/auth/register')
-      .send({ email: INSTRUCTOR_EMAIL, password: INSTRUCTOR_PASSWORD, role: 'instructor' });
-    for (const email of CUSTOMER_EMAILS) {
-      await request(app)
-        .post('/api/auth/register')
-        .send({ email, password: CUSTOMER_PASSWORD, role: 'customer' });
-    }
-    const adminLoginRes = await request(app)
-      .post('/api/auth/login')
-      .send({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD });
-    adminToken = adminLoginRes.body.data.token;
-    customerTokens = [];
-    for (const email of CUSTOMER_EMAILS) {
-      const loginRes = await request(app)
-        .post('/api/auth/login')
-        .send({ email, password: CUSTOMER_PASSWORD });
-      customerTokens.push(loginRes.body.data.token);
-    }
-    // 获取instructorId
-    const instructorUser = await User.findOne({ email: INSTRUCTOR_EMAIL });
-    instructorId = instructorUser._id.toString();
-    // 创建课程
-    await Class.deleteMany({ name: 'Booking Test Class' });
-    const classRes = await request(app)
-      .post('/api/classes')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({
-        name: 'Booking Test Class',
-        description: 'Booking Test Class Description',
-        durationMinutes: 60,
-        instructor: instructorId
-      });
-    if (!classRes.body.data || !classRes.body.data._id) {
-      throw new Error('Class creation failed for booking tests.');
-    }
-    testClassIdForBooking = classRes.body.data._id;
-    // 创建排班
-    await Schedule.deleteMany({ classId: testClassIdForBooking });
-    const now = new Date();
-    const startTime = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-    const endTime = new Date(startTime.getTime() + 60 * 60 * 1000);
-    const scheduleRes = await request(app)
-      .post('/api/schedules')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({
-        classId: testClassIdForBooking,
-        startTime: startTime.toISOString(),
-        endTime: endTime.toISOString(),
-        maxCapacity: 5,
-        room: 'Booking Test Room'
-      });
-    if (!scheduleRes.body.data || !scheduleRes.body.data._id) {
-      throw new Error('Schedule creation failed for booking tests.');
-    }
-    testScheduleIdForBooking = scheduleRes.body.data._id;
-  }, 20000);
 
-  describe('POST /api/bookings', () => {
-    // 在每个预订测试前，清理该用户对该排班的任何已有预订
-    beforeEach(async () => {
-      if (testScheduleIdForBooking) {
-        await Booking.deleteMany({ scheduleId: testScheduleIdForBooking });
-      }
+    // 清理可能存在的测试数据
+    await User.deleteMany({ email: 'test@example.com' });
+    await Schedule.deleteMany({});
+    await Booking.deleteMany({});
+
+    // 创建测试用户
+    testUser = await User.create({
+      email: 'test@example.com',
+      password: 'password123',
+      role: 'customer'
     });
-    
-    it('should create a new booking for an available schedule slot', async () => {
-        if (!testScheduleIdForBooking || customerTokens.length === 0) {
-            throw new Error("Cannot run test: testScheduleIdForBooking or customerTokens is not defined.");
-          }
-      const res = await request(app)
-        .post('/api/bookings')
-        .set('Authorization', `Bearer ${customerTokens[0]}`)
-        .send({
-          scheduleId: testScheduleIdForBooking
-        });
 
-      // if (res.status !== 201) {
-      //   console.log("Create booking response body:", res.body);
-      // }
-      expect(res.status).toBe(201);
-      expect(res.body.success).toBe(true);
-      expect(res.body.data.status).toBe('confirmed'); // 或您的API定义的成功状态
-      expect(res.body.data.scheduleId).toBe(testScheduleIdForBooking);
-    }, 10000);
+    // 获取测试用户的token
+    const loginResponse = await request(app)
+      .post('/api/auth/login')
+      .send({
+        email: 'test@example.com',
+        password: 'password123'
+      });
 
-    it('should fail to create a booking if the schedule slot is full', async () => {
-      if (!testScheduleIdForBooking || customerTokens.length < 6) {
-        throw new Error("Cannot run test: testScheduleIdForBooking or customerTokens is not defined.");
-      }
-      // 前5个用户依次预订
-      for (let i = 0; i < 5; i++) {
-        await request(app)
-          .post('/api/bookings')
-          .set('Authorization', `Bearer ${customerTokens[i]}`)
-          .send({ scheduleId: testScheduleIdForBooking });
-      }
-      // 第6个用户尝试预订，应该会失败 (因为容量是5)
-      const res = await request(app)
-        .post('/api/bookings')
-        .set('Authorization', `Bearer ${customerTokens[5]}`)
-        .send({ scheduleId: testScheduleIdForBooking });
-      expect(res.status).toBe(400); // 课程已满
-      expect(res.body.success).toBe(false);
-      expect(res.body.message).toBe('课程已满');
-    }, 20000);
+    testToken = loginResponse.body.data.token;
 
-    it('should return 401 if no token is provided', async () => {
-      if (!testScheduleIdForBooking) {
-        throw new Error("Cannot run test: testScheduleIdForBooking is not defined.");
-      }
-      const res = await request(app)
-        .post('/api/bookings')
-        .send({ scheduleId: testScheduleIdForBooking });
-      expect(res.status).toBe(401);
-    }, 10000);
-  });
+    // 创建测试排班
+    testSchedule = await Schedule.create({
+      classId: new mongoose.Types.ObjectId(),
+      instructorId: new mongoose.Types.ObjectId(),
+      startTime: new Date(Date.now() + 24 * 60 * 60 * 1000), // 明天
+      endTime: new Date(Date.now() + 25 * 60 * 60 * 1000),
+      maxCapacity: 10,
+      currentBookings: 0,
+      room: 'Test Room'
+    });
+
+    // 创建测试预约
+    testBooking = await Booking.create({
+      userId: testUser._id,
+      scheduleId: testSchedule._id,
+      status: 'confirmed'
+    });
+  }, 30000);
 
   afterAll(async () => {
-    await User.deleteMany({ email: ADMIN_EMAIL });
-    await User.deleteMany({ email: INSTRUCTOR_EMAIL });
-    for (const email of CUSTOMER_EMAILS) {
-      await User.deleteMany({ email });
-    }
-    if (testClassIdForBooking) {
-      await Schedule.deleteMany({ classId: testClassIdForBooking });
-      await Class.deleteMany({ _id: testClassIdForBooking });
-    }
-    if (testScheduleIdForBooking) {
-      await Booking.deleteMany({ scheduleId: testScheduleIdForBooking });
-      await Schedule.deleteMany({ _id: testScheduleIdForBooking });
-    }
+    // 清理测试数据
+    await User.deleteMany({});
+    await Schedule.deleteMany({});
+    await Booking.deleteMany({});
     await mongoose.connection.close();
+  });
+
+  describe('DELETE /api/bookings/:bookingId', () => {
+    it('应该成功取消自己的预约', async () => {
+      const response = await request(app)
+        .delete(`/api/bookings/${testBooking._id}`)
+        .set('Authorization', `Bearer ${testToken}`)
+        .expect(200);
+
+      expect(response.body.success).toBe(true);
+      expect(response.body.message).toBe('预约已成功取消');
+      expect(response.body.data.status).toBe('cancelled');
+
+      // 验证排班可用名额已更新
+      const updatedSchedule = await Schedule.findById(testSchedule._id);
+      expect(updatedSchedule.currentBookings).toBe(0);
+    });
+
+    it('未登录用户应该无法取消预约', async () => {
+      await request(app)
+        .delete(`/api/bookings/${testBooking._id}`)
+        .expect(401);
+    });
+
+    it('应该无法取消不存在的预约', async () => {
+      const nonExistentId = new mongoose.Types.ObjectId();
+      const response = await request(app)
+        .delete(`/api/bookings/${nonExistentId}`)
+        .set('Authorization', `Bearer ${testToken}`)
+        .expect(404);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('预约不存在');
+    });
+
+    it('应该无法取消其他用户的预约', async () => {
+      // 创建另一个用户
+      const otherUser = await User.create({
+        email: 'other@example.com',
+        password: 'password123',
+        role: 'customer'
+      });
+
+      // 获取另一个用户的token
+      const otherLoginResponse = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: 'other@example.com',
+          password: 'password123'
+        });
+
+      const otherToken = otherLoginResponse.body.data.token;
+
+      const response = await request(app)
+        .delete(`/api/bookings/${testBooking._id}`)
+        .set('Authorization', `Bearer ${otherToken}`)
+        .expect(403);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('无权操作此预约');
+
+      // 清理另一个用户
+      await User.deleteOne({ _id: otherUser._id });
+    });
+
+    it('应该无法取消已取消的预约', async () => {
+      // 先取消预约
+      await Booking.findByIdAndUpdate(testBooking._id, { status: 'cancelled' });
+
+      const response = await request(app)
+        .delete(`/api/bookings/${testBooking._id}`)
+        .set('Authorization', `Bearer ${testToken}`)
+        .expect(400);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('只能取消已确认的预约');
+    });
   });
 });

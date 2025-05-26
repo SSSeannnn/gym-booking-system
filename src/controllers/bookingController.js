@@ -79,19 +79,41 @@ const getScheduleBookingsHandler = async (req, res, next) => {
 
 /**
  * 取消预约
- * @param {Object} req - Express请求对象
- * @param {Object} res - Express响应对象
- * @param {Function} next - Express下一个中间件函数
+ * @param {Object} req - 请求对象
+ * @param {Object} res - 响应对象
+ * @param {Function} next - 下一个中间件函数
  */
 const cancelBookingHandler = async (req, res, next) => {
   try {
-    const booking = await cancelBooking(req.params.id, req.user._id);
+    const { bookingId } = req.params;
+    const userId = req.user.id;
+
+    const booking = await cancelBooking(bookingId, userId);
+    
     res.status(200).json({
       success: true,
-      message: '预约取消成功',
+      message: '预约已成功取消',
       data: booking
     });
   } catch (error) {
+    if (error.message === '预约不存在') {
+      return res.status(404).json({
+        success: false,
+        message: error.message
+      });
+    }
+    if (error.message === '无权操作此预约') {
+      return res.status(403).json({
+        success: false,
+        message: error.message
+      });
+    }
+    if (error.message === '只能取消已确认的预约') {
+      return res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
     next(error);
   }
 };

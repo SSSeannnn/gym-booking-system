@@ -81,23 +81,30 @@ async function getScheduleBookings(scheduleId) {
  * 取消预约
  * @param {string} bookingId - 预约ID
  * @param {string} userId - 用户ID
- * @returns {Promise<Object>} 取消的预约
+ * @returns {Promise<Object>} 取消后的预约对象
  */
-async function cancelBooking(bookingId, userId) {
-  const booking = await Booking.findOne({ _id: bookingId, userId });
+const cancelBooking = async (bookingId, userId) => {
+  // 查找预约并验证所有权
+  const booking = await Booking.findById(bookingId);
   if (!booking) {
-    throw new Error('预约不存在或无权取消');
+    throw new Error('预约不存在');
   }
 
-  if (booking.status === 'cancelled') {
-    throw new Error('预约已经取消');
+  // 验证预约是否属于该用户
+  if (booking.userId.toString() !== userId) {
+    throw new Error('无权操作此预约');
+  }
+
+  // 检查预约状态
+  if (booking.status !== 'confirmed') {
+    throw new Error('只能取消已确认的预约');
   }
 
   // 更新预约状态
   booking.status = 'cancelled';
   await booking.save();
 
-  // 更新课程排班的当前预约数
+  // 更新排班可用名额
   const schedule = await Schedule.findById(booking.scheduleId);
   if (schedule) {
     schedule.currentBookings = Math.max(0, schedule.currentBookings - 1);
@@ -105,7 +112,7 @@ async function cancelBooking(bookingId, userId) {
   }
 
   return booking;
-}
+};
 
 /**
  * 获取预约详情
