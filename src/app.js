@@ -8,6 +8,7 @@ const scheduleRoutes = require('./routes/scheduleRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const membershipRoutes = require('./routes/membershipRoutes');
 const connectDB = require('./config/database');
+const { initializeMembershipPlans } = require('./config/initialData');
 
 const app = express();
 
@@ -32,7 +33,18 @@ app.get('/', (req, res) => {
 // 错误处理
 app.use(errorHandler);
 
-// 连接数据库
-connectDB();
+// 连接数据库并初始化数据
+const initializeApp = async () => {
+  try {
+    await connectDB();
+    await initializeMembershipPlans();
+    console.log('Database connected and data initialized successfully');
+  } catch (error) {
+    console.error('Failed to initialize app:', error);
+    process.exit(1);
+  }
+};
+
+initializeApp();
 
 module.exports = app; 

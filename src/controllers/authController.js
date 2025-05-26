@@ -18,7 +18,7 @@ const registerHandler = async (req, res, next) => {
     if (!emailRegex.test(email)) {
       return res.status(400).json({
         success: false,
-        message: '请提供有效的邮箱地址'
+        message: 'Please provide a valid email address'
       });
     }
 
@@ -26,15 +26,15 @@ const registerHandler = async (req, res, next) => {
     if (!planId) {
       return res.status(400).json({
         success: false,
-        message: '请选择会员计划'
+        message: 'Please select a membership plan'
       });
     }
 
-    const plan = membershipService.getPlanById(planId);
+    const plan = await membershipService.getPlanById(planId);
     if (!plan) {
       return res.status(400).json({
         success: false,
-        message: '无效的会员计划ID'
+        message: 'Invalid membership plan ID'
       });
     }
 
@@ -43,7 +43,7 @@ const registerHandler = async (req, res, next) => {
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: '该邮箱已被注册'
+        message: 'Email already registered'
       });
     }
 
@@ -61,10 +61,10 @@ const registerHandler = async (req, res, next) => {
 
     user.membership = {
       status: 'active',
-      type: plan.id.split('_')[0], // 从 planId 中提取类型（monthly 或 weekly）
+      type: plan.name.toLowerCase().includes('monthly') ? 'monthly' : 'yearly',
       startDate,
       endDate,
-      planId: plan.id
+      planId: plan._id
     };
 
     // 保存用户
@@ -80,7 +80,7 @@ const registerHandler = async (req, res, next) => {
     // 返回响应
     res.status(201).json({
       success: true,
-      message: '注册成功',
+      message: 'Registration successful',
       data: {
         user: {
           email: user.email,
@@ -91,7 +91,7 @@ const registerHandler = async (req, res, next) => {
       }
     });
   } catch (error) {
-    console.error('注册错误:', error);
+    console.error('Registration error:', error);
     next(error);
   }
 };
@@ -111,7 +111,7 @@ const loginHandler = async (req, res, next) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: '邮箱或密码错误'
+        message: 'Invalid email or password'
       });
     }
 
@@ -120,7 +120,7 @@ const loginHandler = async (req, res, next) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: '邮箱或密码错误'
+        message: 'Invalid email or password'
       });
     }
 
@@ -134,7 +134,7 @@ const loginHandler = async (req, res, next) => {
     // 返回响应
     res.json({
       success: true,
-      message: '登录成功',
+      message: 'Login successful',
       data: {
         user: {
           email: user.email,

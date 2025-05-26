@@ -2,60 +2,60 @@ const MembershipPlan = require('../models/membershipPlanModel');
 
 const initializeMembershipPlans = async () => {
   try {
-    // 检查是否已存在会员计划
+    // Check if plans already exist
     const existingPlans = await MembershipPlan.find();
     if (existingPlans.length > 0) {
-      console.log('会员计划已存在，跳过初始化');
+      console.log('Membership plans already exist, skipping initialization');
       return;
     }
 
-    // 创建默认会员计划
+    // Create default membership plans
     const plans = [
       {
-        name: '周度会员',
+        name: 'Weekly Plan',
         durationDays: 7,
         price: 30,
-        description: '适合短期健身计划的会员',
+        description: 'Perfect for short-term fitness goals',
         features: [
-          '无限次课程预约',
-          '基础器械使用',
-          '免费储物柜使用'
+          'Unlimited class bookings',
+          'Basic equipment access',
+          'Free locker usage'
         ]
       },
       {
-        name: '月度会员',
+        name: 'Monthly Plan',
         durationDays: 30,
         price: 100,
-        description: '最受欢迎的会员计划',
+        description: 'Our most popular membership plan',
         features: [
-          '无限次课程预约',
-          '所有器械使用',
-          '免费储物柜使用',
-          '免费毛巾服务',
-          '专属会员活动'
+          'Unlimited class bookings',
+          'Full equipment access',
+          'Free locker usage',
+          'Free towel service',
+          'Exclusive member events'
         ]
       },
       {
-        name: '年度会员',
+        name: 'Annual Plan',
         durationDays: 365,
         price: 1000,
-        description: '最具性价比的长期会员计划',
+        description: 'Best value for long-term commitment',
         features: [
-          '无限次课程预约',
-          '所有器械使用',
-          '免费储物柜使用',
-          '免费毛巾服务',
-          '专属会员活动',
-          '私人教练指导（每月2次）',
-          '免费体测服务（每季度1次）'
+          'Unlimited class bookings',
+          'Full equipment access',
+          'Free locker usage',
+          'Free towel service',
+          'Exclusive member events',
+          'Personal trainer sessions (2 per month)',
+          'Free fitness assessment (quarterly)'
         ]
       }
     ];
 
     await MembershipPlan.insertMany(plans);
-    console.log('会员计划初始化成功');
+    console.log('Membership plans initialized successfully');
   } catch (error) {
-    console.error('会员计划初始化失败:', error);
+    console.error('Failed to initialize membership plans:', error);
   }
 };
 
