@@ -2,12 +2,9 @@ const MembershipPlan = require('../models/membershipPlanModel');
 
 const initializeMembershipPlans = async () => {
   try {
-    // Check if plans already exist
-    const existingPlans = await MembershipPlan.find();
-    if (existingPlans.length > 0) {
-      console.log('Membership plans already exist, skipping initialization');
-      return;
-    }
+    // Delete all existing plans
+    await MembershipPlan.deleteMany({});
+    console.log('Deleted existing membership plans');
 
     // Create default membership plans
     const plans = [

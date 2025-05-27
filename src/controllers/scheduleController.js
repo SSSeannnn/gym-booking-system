@@ -25,6 +25,12 @@ const createScheduleHandler = async (req, res, next) => {
       data: newSchedule
     });
   } catch (error) {
+    if (error.message === 'Class not found') {
+      return res.status(404).json({
+        success: false,
+        message: '课程不存在'
+      });
+    }
     next(error);
   }
 };
@@ -38,6 +44,13 @@ const createScheduleHandler = async (req, res, next) => {
 const getAllSchedulesHandler = async (req, res, next) => {
   try {
     const schedules = await getAllSchedules(req.query);
+    if (!schedules || schedules.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: [],
+        message: '没有找到符合条件的排班'
+      });
+    }
     res.status(200).json({
       success: true,
       data: schedules
@@ -61,6 +74,12 @@ const getScheduleByIdHandler = async (req, res, next) => {
       data: schedule
     });
   } catch (error) {
+    if (error.message === 'Schedule not found') {
+      return res.status(404).json({
+        success: false,
+        message: '排班不存在'
+      });
+    }
     next(error);
   }
 };
@@ -80,6 +99,12 @@ const updateScheduleHandler = async (req, res, next) => {
       data: updatedSchedule
     });
   } catch (error) {
+    if (error.message === 'Schedule not found') {
+      return res.status(404).json({
+        success: false,
+        message: '排班不存在'
+      });
+    }
     next(error);
   }
 };
@@ -98,6 +123,12 @@ const deleteScheduleHandler = async (req, res, next) => {
       message: '课程排班删除成功'
     });
   } catch (error) {
+    if (error.message === 'Schedule not found') {
+      return res.status(404).json({
+        success: false,
+        message: '排班不存在'
+      });
+    }
     next(error);
   }
 };

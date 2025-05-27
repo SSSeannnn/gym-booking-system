@@ -14,28 +14,44 @@ const scheduleSchema = new mongoose.Schema({
     type: Date,
     required: [true, 'End time is required']
   },
-  maxCapacity: {
+  totalSpots: {
     type: Number,
     required: [true, 'Maximum capacity is required'],
     min: [1, 'Maximum capacity must be at least 1']
   },
-  currentBookings: {
+  availableSpots: {
     type: Number,
-    default: 0,
-    min: [0, 'Current bookings cannot be negative']
+    default: function() {
+      return this.totalSpots;
+    },
+    min: [0, 'Available spots cannot be negative']
   },
   status: {
     type: String,
     enum: ['scheduled', 'cancelled', 'completed'],
     default: 'scheduled'
   },
-  room: {
+  location: {
     type: String,
-    required: [true, 'Room number is required'],
+    required: [true, 'Location is required'],
     trim: true
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: {
+    transform: function(doc, ret) {
+      ret.id = ret._id;
+      ret.className = ret.classId?.name;
+      ret.instructor = ret.classId?.instructor;
+      ret.level = ret.classId?.level;
+      ret.category = ret.classId?.category;
+      ret.date = ret.startTime;
+      delete ret._id;
+      delete ret.__v;
+      delete ret.classId;
+      return ret;
+    }
+  }
 });
 
 // Add index for better query performance
@@ -45,7 +61,7 @@ scheduleSchema.index({ status: 1 });
 
 // Virtual for checking if class is full
 scheduleSchema.virtual('isFull').get(function() {
-  return this.currentBookings >= this.maxCapacity;
+  return this.availableSpots === 0;
 });
 
 // Virtual for checking if class is available
@@ -61,10 +77,10 @@ scheduleSchema.pre('save', function(next) {
   next();
 });
 
-// Pre-save middleware to validate currentBookings doesn't exceed maxCapacity
+// Pre-save middleware to validate availableSpots doesn't exceed totalSpots
 scheduleSchema.pre('save', function(next) {
-  if (this.currentBookings > this.maxCapacity) {
-    next(new Error('Current bookings cannot exceed maximum capacity'));
+  if (this.availableSpots > this.totalSpots) {
+    next(new Error('Available spots cannot exceed total capacity'));
   }
   next();
 });

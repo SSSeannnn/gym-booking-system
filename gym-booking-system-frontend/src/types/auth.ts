@@ -2,8 +2,9 @@ export interface RegisterFormData {
   email: string;
   password: string;
   confirmPassword: string;
-  role: 'customer' | 'admin' | 'instructor';
   planId: string;
+  username: string;
+  role: 'customer' | 'instructor' | 'admin';
 }
 
 export interface LoginFormData {
@@ -31,11 +32,11 @@ export interface LoginResponse {
 }
 
 export interface MembershipPlan {
-  id: string;
+  _id: string;
   name: string;
   description: string;
   price: number;
-  duration: number; // 会员时长（月）
+  durationDays: number; // 会员时长（天）
   features: string[];
   isActive: boolean;
   createdAt: string;

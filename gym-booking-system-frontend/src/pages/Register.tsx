@@ -10,14 +10,15 @@ const Register = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'customer',
     planId: '',
+    username: '',
+    role: 'customer'
   });
 
   const [errors, setErrors] = useState<Partial<RegisterFormData>>({});
   const [generalError, setGeneralError] = useState<string>('');
 
-  const { data: membershipPlans, isLoading, error: plansError } = useQuery<MembershipPlan[], Error>({
+  const { data: membershipPlans, isLoading: plansLoading, error: plansError } = useQuery<MembershipPlan[], Error>({
     queryKey: ['membershipPlans'],
     queryFn: getMembershipPlans,
   });
@@ -31,9 +32,7 @@ const Register = () => {
     onError: (error: any) => {
       console.error('Registration error:', error);
       setGeneralError(error.message || 'Registration failed, please try again');
-      setErrors({
-        email: error.message || 'Registration failed',
-      });
+      setErrors(error);
     },
   });
 
@@ -57,6 +56,9 @@ const Register = () => {
     }
     if (!formData.planId) {
       newErrors.planId = 'Please select a membership plan';
+    }
+    if (!formData.username) {
+      newErrors.username = 'Username is required';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -122,6 +124,25 @@ const Register = () => {
           )}
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
+              <label htmlFor="username" className="sr-only">
+                Username
+              </label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="username"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm bg-white"
+                placeholder="Username"
+                value={formData.username}
+                onChange={handleChange}
+              />
+              {errors.username && (
+                <p className="mt-1 text-sm text-red-600">{errors.username}</p>
+              )}
+            </div>
+            <div>
               <label htmlFor="email" className="sr-only">
                 Email address
               </label>
@@ -179,36 +200,20 @@ const Register = () => {
               )}
             </div>
             <div>
-              <label htmlFor="role" className="sr-only">
-                Role
-              </label>
-              <select
-                id="role"
-                name="role"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm bg-white"
-                value={formData.role}
-                onChange={handleChange}
-              >
-                <option value="customer">Customer</option>
-                <option value="instructor">Instructor</option>
-              </select>
-            </div>
-            <div>
               <label htmlFor="planId" className="sr-only">
                 Membership Plan
               </label>
               <select
                 id="planId"
                 name="planId"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm bg-white"
                 value={formData.planId}
                 onChange={handleChange}
-                disabled={isLoading}
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm bg-white"
+                required
+                disabled={plansLoading}
               >
                 <option value="">Select a membership plan</option>
-                {isLoading ? (
+                {plansLoading ? (
                   <option value="" disabled>Loading plans...</option>
                 ) : !membershipPlans || membershipPlans.length === 0 ? (
                   <option value="" disabled>No plans available</option>

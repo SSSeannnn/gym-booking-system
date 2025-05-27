@@ -10,35 +10,58 @@ const classSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-  durationMinutes: {
+  duration: {
     type: Number,
     required: [true, 'Class duration is required'],
     min: [15, 'Class duration must be at least 15 minutes'],
     max: [180, 'Class duration cannot exceed 180 minutes']
+  },
+  capacity: {
+    type: Number,
+    required: [true, 'Maximum capacity is required'],
+    min: [1, 'Maximum capacity must be at least 1'],
+    default: 20
   },
   instructor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: [true, 'Instructor is required']
   },
-  maxCapacity: {
-    type: Number,
-    required: [true, 'Maximum capacity is required'],
-    min: [1, 'Maximum capacity must be at least 1'],
-    default: 20
+  level: {
+    type: String,
+    enum: ['beginner', 'intermediate', 'advanced'],
+    required: [true, 'Class level is required']
+  },
+  category: {
+    type: String,
+    required: [true, 'Class category is required'],
+    trim: true
+  },
+  imageUrl: {
+    type: String,
+    trim: true
   },
   isActive: {
     type: Boolean,
     default: true
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: {
+    transform: function(doc, ret) {
+      ret.id = ret._id;
+      delete ret._id;
+      delete ret.__v;
+      return ret;
+    }
+  }
 });
 
 // Add index for better query performance
 classSchema.index({ name: 1 });
 classSchema.index({ instructor: 1 });
-classSchema.index({ isActive: 1 });
+classSchema.index({ level: 1 });
+classSchema.index({ category: 1 });
 
 const Class = mongoose.model('Class', classSchema);
 

@@ -6,12 +6,8 @@ const Class = require('../models/classModel');
  * @returns {Promise<Object>} - Created class
  */
 const createClass = async (classData) => {
-  try {
-    const newClass = await Class.create(classData);
-    return newClass;
-  } catch (error) {
-    throw error;
-  }
+  const newClass = new Class(classData);
+  return await newClass.save();
 };
 
 /**
@@ -33,15 +29,12 @@ const getAllClasses = async (filter = {}) => {
 /**
  * Get class by ID
  * @param {string} id - Class ID
- * @returns {Promise<Object>} - Class details
+ * @returns {Promise<Object>} - Class data
  */
 const getClassById = async (id) => {
   try {
     const classData = await Class.findById(id)
       .populate('instructor', 'email');
-    if (!classData) {
-      throw new Error('Class not found');
-    }
     return classData;
   } catch (error) {
     throw error;
@@ -59,12 +52,8 @@ const updateClass = async (id, updateData) => {
     const updatedClass = await Class.findByIdAndUpdate(
       id,
       updateData,
-      { new: true, runValidators: true }
+      { new: true }
     ).populate('instructor', 'email');
-
-    if (!updatedClass) {
-      throw new Error('Class not found');
-    }
     return updatedClass;
   } catch (error) {
     throw error;
@@ -79,9 +68,6 @@ const updateClass = async (id, updateData) => {
 const deleteClass = async (id) => {
   try {
     const deletedClass = await Class.findByIdAndDelete(id);
-    if (!deletedClass) {
-      throw new Error('Class not found');
-    }
     return deletedClass;
   } catch (error) {
     throw error;

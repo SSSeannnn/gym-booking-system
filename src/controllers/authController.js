@@ -11,7 +11,7 @@ const jwtConfig = require('../config/jwt.config');
  */
 const registerHandler = async (req, res, next) => {
   try {
-    const { email, password, role = 'customer', planId } = req.body;
+    const { email, password, role = 'customer', planId, username } = req.body;
 
     // 验证邮箱格式
     const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
@@ -51,7 +51,8 @@ const registerHandler = async (req, res, next) => {
     const user = new User({
       email,
       password,
-      role
+      role,
+      username
     });
 
     // 设置会员信息
@@ -85,6 +86,7 @@ const registerHandler = async (req, res, next) => {
         user: {
           email: user.email,
           role: user.role,
+          username: user.username,
           membership: user.membership
         },
         token
@@ -139,6 +141,7 @@ const loginHandler = async (req, res, next) => {
         user: {
           email: user.email,
           role: user.role,
+          username: user.username,
           membership: user.membership
         },
         token
@@ -149,7 +152,26 @@ const loginHandler = async (req, res, next) => {
   }
 };
 
+const getProfileHandler = async (req, res, next) => {
+  try {
+    const user = req.user;
+    res.json({
+      success: true,
+      data: {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+        username: user.username,
+        membership: user.membership
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   registerHandler,
-  loginHandler
+  loginHandler,
+  getProfileHandler
 }; 

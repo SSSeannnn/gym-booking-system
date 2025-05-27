@@ -10,6 +10,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import ProtectedRoute from './components/ProtectedRoute';
 import ClassDetail from './pages/ClassDetail';
+import AdminDashboard from './pages/admin/Dashboard';
+import AdminRoute from './components/AdminRoute';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -47,6 +49,14 @@ function App() {
                 <ProtectedRoute>
                   <Membership />
                 </ProtectedRoute>
+              }
+            />
+            <Route
+              path="admin"
+              element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
               }
             />
           </Route>

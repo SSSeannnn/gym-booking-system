@@ -37,7 +37,12 @@ const createClassHandler = async (req, res, next) => {
  */
 const getAllClassesHandler = async (req, res, next) => {
   try {
-    const classes = await getAllClasses(req.query);
+    const filter = {};
+    if (req.query.level) filter.level = req.query.level;
+    if (req.query.category) filter.category = req.query.category;
+    if (req.query.instructor) filter.instructor = req.query.instructor;
+    
+    const classes = await getAllClasses(filter);
     res.status(200).json({
       success: true,
       data: classes
@@ -56,6 +61,12 @@ const getAllClassesHandler = async (req, res, next) => {
 const getClassByIdHandler = async (req, res, next) => {
   try {
     const classData = await getClassById(req.params.id);
+    if (!classData) {
+      return res.status(404).json({
+        success: false,
+        message: 'Class not found'
+      });
+    }
     res.status(200).json({
       success: true,
       data: classData
@@ -74,6 +85,12 @@ const getClassByIdHandler = async (req, res, next) => {
 const updateClassHandler = async (req, res, next) => {
   try {
     const updatedClass = await updateClass(req.params.id, req.body);
+    if (!updatedClass) {
+      return res.status(404).json({
+        success: false,
+        message: 'Class not found'
+      });
+    }
     res.status(200).json({
       success: true,
       message: 'Class updated successfully',
@@ -92,7 +109,13 @@ const updateClassHandler = async (req, res, next) => {
  */
 const deleteClassHandler = async (req, res, next) => {
   try {
-    await deleteClass(req.params.id);
+    const deletedClass = await deleteClass(req.params.id);
+    if (!deletedClass) {
+      return res.status(404).json({
+        success: false,
+        message: 'Class not found'
+      });
+    }
     res.status(200).json({
       success: true,
       message: 'Class deleted successfully'

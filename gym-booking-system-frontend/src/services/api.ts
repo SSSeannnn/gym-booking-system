@@ -78,6 +78,7 @@ export const getMembershipPlans = async (): Promise<MembershipPlan[]> => {
 export interface UserProfile {
   id: string;
   email: string;
+  username: string;
   role: string;
 }
 
@@ -98,12 +99,12 @@ export const getClasses = async (filters?: ClassFilters) => {
   if (filters?.instructor) params.append('instructor', filters.instructor);
   
   const response = await api.get(`/classes?${params.toString()}`);
-  return response.data;
+  return response.data.data;
 };
 
-export const getClassDetail = async (classId: string): Promise<ClassDetail> => {
-  const response = await api.get(`/classes/${classId}`);
-  return response.data;
+export const getClassDetail = async (id: string) => {
+  const response = await api.get(`/classes/${id}`);
+  return response.data.data;
 };
 
 export const getClassSchedules = async (classId: string): Promise<Schedule[]> => {
@@ -120,7 +121,7 @@ export const getSchedules = async (filters?: ScheduleFilters): Promise<Schedule[
   if (filters?.category) params.append('category', filters.category);
   
   const response = await api.get(`/schedules?${params.toString()}`);
-  return response.data;
+  return response.data.data;
 };
 
 // 会员相关API
@@ -146,5 +147,32 @@ export const renewMembership = async (planId: string): Promise<void> => {
     await api.post('/memberships/me/renew', { planId });
   } catch (error: any) {
     throw error.response?.data || { message: 'Failed to renew membership' };
+  }
+};
+
+// 预约相关API
+export const createBooking = async (scheduleId: string): Promise<void> => {
+  try {
+    const response = await api.post('/bookings', { scheduleId });
+    return response.data.data;
+  } catch (error: any) {
+    throw error.response?.data || { message: 'Failed to create booking' };
+  }
+};
+
+export const getMyBookings = async () => {
+  try {
+    const response = await api.get('/bookings/me');
+    return response.data.data;
+  } catch (error: any) {
+    throw error.response?.data || { message: 'Failed to fetch bookings' };
+  }
+};
+
+export const cancelBooking = async (bookingId: string): Promise<void> => {
+  try {
+    await api.delete(`/bookings/${bookingId}`);
+  } catch (error: any) {
+    throw error.response?.data || { message: 'Failed to cancel booking' };
   }
 }; 

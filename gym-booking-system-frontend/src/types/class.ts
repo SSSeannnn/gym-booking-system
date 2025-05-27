@@ -48,4 +48,26 @@ export interface ScheduleFilters {
   instructor?: string;
   level?: string;
   category?: string;
+}
+
+export interface Booking {
+  _id: string;
+  userId: string;
+  scheduleId: string;
+  status: 'confirmed' | 'cancelled' | 'pending';
+  createdAt: string;
+  updatedAt: string;
+  schedule: {
+    _id: string;
+    className: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    instructor: string;
+    location: string;
+    level: string;
+    category: string;
+    totalSpots: number;
+    availableSpots: number;
+  };
 } 

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { registerHandler, loginHandler } = require('../controllers/authController');
+const { registerHandler, loginHandler, getProfileHandler } = require('../controllers/authController');
 const { authenticate } = require('../middlewares/authMiddleware');
 const { authorize } = require('../middlewares/roleMiddleware');
 const { validateRequest } = require('../middlewares/validateMiddleware');
@@ -9,6 +9,9 @@ const schemas = require('../validations/authValidation');
 // Public routes
 router.post('/register', validateRequest(schemas.register), registerHandler);
 router.post('/login', validateRequest(schemas.login), loginHandler);
+
+// Protected routes
+router.get('/profile', authenticate, getProfileHandler);
 
 // Protected test route
 router.get('/protected', authenticate, (req, res) => {
