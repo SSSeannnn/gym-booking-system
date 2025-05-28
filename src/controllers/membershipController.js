@@ -48,14 +48,14 @@ const cancelMembershipHandler = async (req, res, next) => {
     const user = await membershipService.cancelMembership(req.user.id);
     res.status(200).json({
       success: true,
-      message: '会员订阅已取消',
+      message: 'Membership subscription canceled',
       data: {
         membership: user.membership && user.membership.toObject ? user.membership.toObject() : user.membership,
-        message: `您的会员资格将持续到 ${user.membership.endDate.toLocaleDateString()}`
+        message: `Your membership will last until ${user.membership.endDate.toLocaleDateString()}`
       }
     });
   } catch (error) {
-    if (error.message === '当前没有激活的会员订阅') {
+    if (error.message === 'There are currently no active membership subscriptions') {
       return res.status(400).json({
         success: false,
         message: error.message
@@ -77,21 +77,21 @@ const renewMembershipHandler = async (req, res, next) => {
     if (!planId) {
       return res.status(400).json({
         success: false,
-        message: '请选择会员计划'
+        message: 'Please select a membership plan'
       });
     }
 
     const user = await membershipService.renewMembership(req.user.id, planId);
     res.status(200).json({
       success: true,
-      message: '会员续订成功',
+      message: 'Membership subscription successful',
       data: {
         membership: user.membership && user.membership.toObject ? user.membership.toObject() : user.membership,
-        message: `您的会员资格已延长至 ${user.membership.endDate.toLocaleDateString()}`
+        message: `Your membership will last until ${user.membership.endDate.toLocaleDateString()}`
       }
     });
   } catch (error) {
-    if (error.message === '无效的会员计划') {
+    if (error.message === 'Invalid membership plan') {
       return res.status(400).json({
         success: false,
         message: error.message

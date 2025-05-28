@@ -4,7 +4,8 @@ const {
   updateUser,
   deleteUser,
   updateUserRole,
-  getUserStats
+  getUserStats,
+  createUser
 } = require('../services/userService');
 
 /**
@@ -54,7 +55,7 @@ const updateUserHandler = async (req, res, next) => {
     const user = await updateUser(req.params.id, req.body);
     res.status(200).json({
       success: true,
-      message: '用户信息更新成功',
+      message: 'User information updated successfully',
       data: user
     });
   } catch (error) {
@@ -73,7 +74,7 @@ const deleteUserHandler = async (req, res, next) => {
     const user = await deleteUser(req.params.id);
     res.status(200).json({
       success: true,
-      message: '用户删除成功',
+      message: 'User deleted successfully',
       data: user
     });
   } catch (error) {
@@ -92,7 +93,7 @@ const updateUserRoleHandler = async (req, res, next) => {
     const user = await updateUserRole(req.params.id, req.body.role);
     res.status(200).json({
       success: true,
-      message: '用户角色更新成功',
+      message: 'User role updated successfully',
       data: user
     });
   } catch (error) {
@@ -118,11 +119,49 @@ const getUserStatsHandler = async (req, res, next) => {
   }
 };
 
+/**
+ * 创建新用户
+ * @param {Object} req - Express请求对象
+ * @param {Object} res - Express响应对象
+ * @param {Function} next - Express下一个中间件函数
+ */
+const createUserHandler = async (req, res, next) => {
+  try {
+    console.log('POST /api/users - 收到的请求体:', JSON.stringify(req.body, null, 2));
+    console.log('当前登录用户:', JSON.stringify(req.user, null, 2));
+
+    const userData = {
+      ...req.body,
+      createdBy: req.user._id // 设置创建者为当前登录用户
+    };
+    console.log('准备创建的用户数据:', JSON.stringify(userData, null, 2));
+
+    const newUser = await createUser(userData);
+    console.log('用户创建成功:', JSON.stringify(newUser, null, 2));
+
+    res.status(201).json({
+      success: true,
+      message: 'User created successfully',
+      data: newUser
+    });
+  } catch (error) {
+    console.error('创建用户时发生错误:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: 'This email has already been registered'
+      });
+    }
+    next(error);
+  }
+};
+
 module.exports = {
   getAllUsersHandler,
   getUserByIdHandler,
   updateUserHandler,
   deleteUserHandler,
   updateUserRoleHandler,
-  getUserStatsHandler
+  getUserStatsHandler,
+  createUserHandler
 }; 

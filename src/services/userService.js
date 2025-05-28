@@ -1,5 +1,6 @@
 const User = require('../models/userModel');
 const bcrypt = require('bcryptjs');
+const MembershipPlan = require('../models/membershipPlanModel');
 
 /**
  * 获取所有用户
@@ -17,7 +18,7 @@ async function getAllUsers() {
 async function getUserById(userId) {
   const user = await User.findById(userId).select('-password');
   if (!user) {
-    throw new Error('用户不存在');
+    throw new Error('User not found');
   }
   return user;
 }
@@ -41,7 +42,7 @@ async function updateUser(userId, updateData) {
   ).select('-password');
 
   if (!user) {
-    throw new Error('用户不存在');
+    throw new Error('User not found');
   }
 
   return user;
@@ -55,7 +56,7 @@ async function updateUser(userId, updateData) {
 async function deleteUser(userId) {
   const user = await User.findByIdAndDelete(userId).select('-password');
   if (!user) {
-    throw new Error('用户不存在');
+    throw new Error('User not found');
   }
   return user;
 }
@@ -74,7 +75,7 @@ async function updateUserRole(userId, role) {
   ).select('-password');
 
   if (!user) {
-    throw new Error('用户不存在');
+    throw new Error('User not found');
   }
 
   return user;
@@ -98,7 +99,66 @@ async function getUserStats() {
   };
 }
 
+// 创建用户
+async function createUser(userData) {
+  try {
+    // 检查邮箱是否已存在
+    const existingUser = await User.findOne({ email: userData.email });
+    if (existingUser) {
+      throw new Error('Email already exists');
+    }
+
+    // 处理会员信息
+    let membership = null;
+    if (userData.planId && userData.planId !== 'none') {
+      const startDate = new Date();
+      let endDate = new Date();
+
+      // 根据会员类型计算结束日期
+      switch (userData.planId) {
+        case 'weekly':
+          endDate.setDate(startDate.getDate() + 7);
+          break;
+        case 'monthly':
+          endDate.setMonth(startDate.getMonth() + 1);
+          break;
+        case 'yearly':
+          endDate.setFullYear(startDate.getFullYear() + 1);
+          break;
+      }
+
+      membership = {
+        type: userData.planId,
+        status: 'active',
+        startDate: startDate,
+        endDate: endDate,
+        autoRenew: false
+      };
+    }
+
+    // 生成密码盐和哈希
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(userData.password, salt);
+
+    // 创建用户对象
+    const user = new User({
+      username: userData.username,
+      email: userData.email,
+      password: hashedPassword,
+      role: userData.role,
+      membership: membership
+    });
+
+    // 保存用户
+    const savedUser = await user.save();
+    return savedUser;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
+  createUser,
   getAllUsers,
   getUserById,
   updateUser,

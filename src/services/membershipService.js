@@ -24,7 +24,7 @@ const getPlanById = async (planId) => {
 const initializeMembership = async (userId, planId) => {
   const plan = await getPlanById(planId);
   if (!plan) {
-    throw new Error('无效的会员计划');
+    throw new Error('Invalid membership plan');
   }
 
   const startDate = new Date();
@@ -33,12 +33,12 @@ const initializeMembership = async (userId, planId) => {
 
   const user = await User.findById(userId);
   if (!user) {
-    throw new Error('用户不存在');
+    throw new Error('User not found');
   }
 
   user.membership = {
     status: 'active',
-    type: plan.name.toLowerCase().includes('月度') ? 'monthly' : 'yearly',
+    type: plan.name.toLowerCase().includes('monthly') ? 'monthly' : 'yearly',
     startDate,
     endDate,
     autoRenew: true,
@@ -53,11 +53,11 @@ const initializeMembership = async (userId, planId) => {
 const cancelMembership = async (userId) => {
   const user = await User.findById(userId);
   if (!user) {
-    throw new Error('用户不存在');
+    throw new Error('User not found');
   }
 
   if (!user.membership || user.membership.status !== 'active') {
-    throw new Error('当前没有激活的会员订阅');
+    throw new Error('No active membership subscription');
   }
 
   user.membership.autoRenew = false;
@@ -70,12 +70,12 @@ const cancelMembership = async (userId) => {
 const renewMembership = async (userId, planId) => {
   const plan = await getPlanById(planId);
   if (!plan) {
-    throw new Error('无效的会员计划');
+    throw new Error('Invalid membership plan');
   }
 
   const user = await User.findById(userId);
   if (!user) {
-    throw new Error('用户不存在');
+    throw new Error('User not found');
   }
 
   const now = new Date();
@@ -94,7 +94,7 @@ const renewMembership = async (userId, planId) => {
 
   user.membership = {
     status: 'active',
-    type: plan.name.toLowerCase().includes('月度') ? 'monthly' : 'yearly',
+    type: plan.name.toLowerCase().includes('monthly') ? 'monthly' : 'yearly',
     startDate,
     endDate,
     planId: plan._id,
@@ -109,13 +109,13 @@ const renewMembership = async (userId, planId) => {
 const checkMembershipStatus = async (userId) => {
   const user = await User.findById(userId);
   if (!user) {
-    throw new Error('用户不存在');
+    throw new Error('User not found');
   }
 
   if (!user.membership) {
     return {
       status: 'none',
-      message: '非会员用户'
+      message: 'Non-member user'
     };
   }
 

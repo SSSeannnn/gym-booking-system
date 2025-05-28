@@ -7,14 +7,19 @@ const Joi = require('joi');
  */
 const validateRequest = (schema) => {
   return (req, res, next) => {
+    console.log('validateRequest - 开始验证请求体:', JSON.stringify(req.body, null, 2));
+    console.log('validateRequest - 使用的验证模式:', schema.describe());
+
     const { error } = schema.validate(req.body);
     if (error) {
+      console.log('validateRequest - 验证失败:', error.details);
       const errorMessage = error.details.map(detail => detail.message).join(', ');
       return res.status(400).json({
         success: false,
         message: `输入验证失败: ${errorMessage}`
       });
     }
+    console.log('validateRequest - 验证通过');
     next();
   };
 };
@@ -26,6 +31,28 @@ const schemas = {
     email: Joi.string().email().required(),
     password: Joi.string().min(6).required(),
     role: Joi.string().valid('customer', 'admin', 'instructor').default('customer')
+  }),
+
+  // 创建用户验证
+  createUser: Joi.object({
+    username: Joi.string().required().messages({
+      'string.empty': 'Username cannot be empty',
+      'any.required': 'Username is required'
+    }),
+    email: Joi.string().email().required().messages({
+      'string.email': 'Please enter a valid email address',
+      'any.required': 'Email is required'
+    }),
+    password: Joi.string().min(6).required().messages({
+      'string.min': 'Password must be at least 6 characters long',
+      'any.required': 'Password is required'
+    }),
+    role: Joi.string().valid('customer', 'admin', 'instructor').default('customer').messages({
+      'any.only': 'Role must be one of: customer, admin, instructor'
+    }),
+    planId: Joi.string().valid('none', 'weekly', 'monthly', 'yearly').default('none').messages({
+      'any.only': 'Plan ID must be one of: none, weekly, monthly, yearly'
+    })
   }),
 
   // 用户登录验证

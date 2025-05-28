@@ -7,6 +7,7 @@ const classRoutes = require('./routes/classRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const membershipRoutes = require('./routes/membershipRoutes');
+const userRoutes = require('./routes/userRoutes');
 const connectDB = require('./config/database');
 const { initializeMembershipPlans } = require('./config/initialData');
 
@@ -24,10 +25,11 @@ app.use('/api/classes', classRoutes);
 app.use('/api/schedules', scheduleRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/memberships', membershipRoutes);
+app.use('/api/users', userRoutes);
 
 // 测试路由
 app.get('/', (req, res) => {
-  res.json({ message: '欢迎使用健身房预订系统 API' });
+  res.json({ message: 'Welcome to Gym Booking System API' });
 });
 
 // 错误处理

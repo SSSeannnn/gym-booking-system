@@ -6,13 +6,18 @@ const {
   updateUserHandler,
   deleteUserHandler,
   updateUserRoleHandler,
-  getUserStatsHandler
+  getUserStatsHandler,
+  createUserHandler
 } = require('../controllers/userController');
 const { authenticate } = require('../middlewares/authMiddleware');
 const { authorize } = require('../middlewares/roleMiddleware');
+const { validateRequest, schemas } = require('../middlewares/validateRequest');
 
 // All routes require authentication
 router.use(authenticate);
+
+// Create new user
+router.post('/', authorize(['admin']), validateRequest(schemas.createUser), createUserHandler);
 
 // Get all users
 router.get('/', authorize(['admin']), getAllUsersHandler);

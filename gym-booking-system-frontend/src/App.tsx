@@ -12,6 +12,14 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ClassDetail from './pages/ClassDetail';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminRoute from './components/AdminRoute';
+import AdminLayout from './layouts/AdminLayout';
+import NotFound from './pages/NotFound';
+import ClassManagement from './pages/admin/ClassManagement';
+import ClassForm from './pages/admin/ClassForm';
+import ScheduleManagement from './pages/admin/ScheduleManagement';
+import ScheduleForm from './pages/admin/ScheduleForm';
+import UserManagement from './pages/admin/UserManagement';
+import UserForm from './pages/admin/UserForm';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -51,15 +59,23 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="admin"
-              element={
-                <AdminRoute>
-                  <AdminDashboard />
-                </AdminRoute>
-              }
-            />
           </Route>
+          
+          <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="classes" element={<ClassManagement />} />
+            <Route path="classes/new" element={<ClassForm />} />
+            <Route path="classes/:id/edit" element={<ClassForm />} />
+            <Route path="schedules" element={<ScheduleManagement />} />
+            <Route path="schedules/new" element={<ScheduleForm />} />
+            <Route path="schedules/:id/edit" element={<ScheduleForm />} />
+            <Route path="users" element={<UserManagement />} />
+            <Route path="users/new" element={<UserForm />} />
+            <Route path="users/edit/:userId" element={<UserForm />} />
+          </Route>
+
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </QueryClientProvider>
