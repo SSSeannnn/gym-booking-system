@@ -129,7 +129,7 @@ const ScheduleForm = () => {
 
   const handleStartTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const startTime = e.target.value;
-    const selectedClass = classes.find((c) => c._id === formData.class);
+    const selectedClass = classes.find((c) => c._id === formData.classId);
     
     if (selectedClass) {
       const endTime = new Date(startTime);
@@ -163,7 +163,7 @@ const ScheduleForm = () => {
             name="class"
             id="class"
             required
-            value={formData.class}
+            value={formData.classId}
             onChange={handleClassChange}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           >
@@ -216,7 +216,7 @@ const ScheduleForm = () => {
             id="maxCapacity"
             min="1"
             required
-            value={formData.maxCapacity}
+            value={formData.totalSpots}
             onChange={handleChange}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           />
@@ -231,7 +231,7 @@ const ScheduleForm = () => {
             name="room"
             id="room"
             required
-            value={formData.room}
+            value={formData.location}
             onChange={handleChange}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           />

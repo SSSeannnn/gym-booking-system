@@ -8,14 +8,9 @@ const { Option } = Select;
 interface UserFormData {
   username: string;
   email: string;
-  password?: string;
+  password: string;
   role: 'customer' | 'instructor' | 'admin';
-  membership: {
-    type: 'none' | 'monthly' | 'yearly';
-    startDate: Date;
-    endDate?: Date;
-    status: 'active' | 'expired' | 'cancelled';
-  };
+  planId: 'none' | 'weekly' | 'monthly' | 'yearly';
 }
 
 const UserForm: React.FC = () => {
@@ -39,11 +34,7 @@ const UserForm: React.FC = () => {
       const userData = response.data.data;
       form.setFieldsValue({
         ...userData,
-        membership: {
-          ...userData.membership,
-          startDate: userData.membership.startDate ? new Date(userData.membership.startDate) : null,
-          endDate: userData.membership.endDate ? new Date(userData.membership.endDate) : null,
-        },
+        planId: userData.planId,
       });
     } catch (error) {
       message.error('Failed to fetch user data');
@@ -56,20 +47,19 @@ const UserForm: React.FC = () => {
   const handleSubmit = async (values: UserFormData) => {
     try {
       setLoading(true);
-      const submitData = {
-        ...values,
-        membership: {
-          ...values.membership,
-          startDate: values.membership.startDate.toISOString(),
-          endDate: values.membership.endDate?.toISOString(),
-        },
+      const userData = {
+        username: values.username,
+        email: values.email,
+        password: values.password,
+        role: values.role,
+        planId: values.planId
       };
 
       if (isEditMode) {
-        await api.put(`/users/${userId}`, submitData);
+        await api.put(`/users/${userId}`, userData);
         message.success('User updated successfully');
       } else {
-        await api.post('/users', submitData);
+        await api.post('/users', userData);
         message.success('User created successfully');
       }
       navigate('/admin/users');
@@ -92,10 +82,7 @@ const UserForm: React.FC = () => {
         onFinish={handleSubmit}
         initialValues={{
           role: 'customer',
-          membership: {
-            type: 'none',
-            status: 'active',
-          },
+          planId: 'none',
         }}
       >
         <Form.Item
@@ -139,39 +126,17 @@ const UserForm: React.FC = () => {
           </Select>
         </Form.Item>
 
-        <Form.Item label="Membership" required>
-          <Form.Item
-            name={['membership', 'type']}
-            rules={[{ required: true, message: 'Please select membership type!' }]}
-          >
-            <Select>
-              <Option value="none">None</Option>
-              <Option value="monthly">Monthly</Option>
-              <Option value="yearly">Yearly</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name={['membership', 'startDate']}
-            rules={[{ required: true, message: 'Please select start date!' }]}
-          >
-            <DatePicker className="w-full" />
-          </Form.Item>
-
-          <Form.Item name={['membership', 'endDate']}>
-            <DatePicker className="w-full" />
-          </Form.Item>
-
-          <Form.Item
-            name={['membership', 'status']}
-            rules={[{ required: true, message: 'Please select status!' }]}
-          >
-            <Select>
-              <Option value="active">Active</Option>
-              <Option value="expired">Expired</Option>
-              <Option value="cancelled">Cancelled</Option>
-            </Select>
-          </Form.Item>
+        <Form.Item
+          name="planId"
+          label="Membership Plan"
+          rules={[{ required: true, message: 'Please select a membership plan' }]}
+        >
+          <Select>
+            <Select.Option value="none">None</Select.Option>
+            <Select.Option value="weekly">Weekly</Select.Option>
+            <Select.Option value="monthly">Monthly</Select.Option>
+            <Select.Option value="yearly">Yearly</Select.Option>
+          </Select>
         </Form.Item>
 
         <Form.Item>
