@@ -18,7 +18,7 @@ const createClass = async (classData) => {
 const getAllClasses = async (filter = {}) => {
   try {
     const classes = await Class.find(filter)
-      .populate('instructor', 'email')
+      .populate('instructor', 'username')
       .sort({ createdAt: -1 });
     return classes;
   } catch (error) {
@@ -34,7 +34,7 @@ const getAllClasses = async (filter = {}) => {
 const getClassById = async (id) => {
   try {
     const classData = await Class.findById(id)
-      .populate('instructor', 'email');
+      .populate('instructor', 'username');
     return classData;
   } catch (error) {
     throw error;
@@ -53,7 +53,7 @@ const updateClass = async (id, updateData) => {
       id,
       updateData,
       { new: true }
-    ).populate('instructor', 'email');
+    ).populate('instructor', 'username');
     return updatedClass;
   } catch (error) {
     throw error;

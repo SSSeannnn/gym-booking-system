@@ -14,6 +14,12 @@ interface User {
   role: string;
 }
 
+interface Class {
+  id: string;
+  name: string;
+  isActive: boolean;
+}
+
 interface ApiResponse<T> {
   success: boolean;
   data: T;
@@ -32,13 +38,43 @@ const AdminDashboard = () => {
     },
   });
 
+  // Fetch classes for statistics
+  const { data: classesResponse } = useQuery<ApiResponse<Class[]>>({
+    queryKey: ['classes'],
+    queryFn: async () => {
+      const response = await axios.get('/classes');
+      return response.data;
+    },
+  });
+
+  // 获取所有排班
+  const { data: schedulesResponse } = useQuery({
+    queryKey: ['schedules', 'dashboard'],
+    queryFn: async () => {
+      const response = await axios.get('/schedules');
+      return response.data;
+    },
+  });
+
   const users = usersResponse?.data || [];
+  const classes = classesResponse?.data || [];
   const customerCount = users.filter(user => user.role === 'customer').length;
+  const activeClassesCount = classes.length;
+
+  // 计算今天的排班数量
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  const todaysSchedules = schedulesResponse?.data?.filter((sch: Schedule) => {
+    const start = new Date(sch.startTime);
+    return start >= today && start < tomorrow;
+  }) || [];
 
   const stats = [
     { name: 'Total Users', value: customerCount.toString(), icon: UserGroupIcon },
-    { name: 'Active Classes', value: '0', icon: BookOpenIcon },
-    { name: 'Today\'s Schedules', value: '0', icon: CalendarIcon },
+    { name: 'Active Classes', value: activeClassesCount.toString(), icon: BookOpenIcon },
+    { name: 'Today\'s Schedules', value: todaysSchedules.length.toString(), icon: CalendarIcon },
     { name: 'Pending Bookings', value: '0', icon: ClockIcon },
   ];
 
@@ -59,7 +95,7 @@ const AdminDashboard = () => {
             className="relative overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:px-6 sm:py-6"
           >
             <dt>
-              <div className="absolute rounded-md bg-primary-500 p-3">
+              <div className="absolute rounded-md bg-indigo-500 p-3">
                 <item.icon className="h-6 w-6 text-white" aria-hidden="true" />
               </div>
               <p className="ml-16 truncate text-sm font-medium text-gray-500">{item.name}</p>

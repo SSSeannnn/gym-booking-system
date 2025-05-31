@@ -6,7 +6,7 @@ const classSchema = new mongoose.Schema({
     required: [true, 'Class name is required'],
     trim: true
   },
-  description: {
+  durationMinutes: {
     type: String,
     trim: true
   },
@@ -16,7 +16,7 @@ const classSchema = new mongoose.Schema({
     min: [15, 'Class duration must be at least 15 minutes'],
     max: [180, 'Class duration cannot exceed 180 minutes']
   },
-  capacity: {
+  maxCapacity: {
     type: Number,
     required: [true, 'Maximum capacity is required'],
     min: [1, 'Maximum capacity must be at least 1'],
@@ -50,8 +50,10 @@ const classSchema = new mongoose.Schema({
   toJSON: {
     transform: function(doc, ret) {
       ret.id = ret._id;
+      ret.maxCapacity = ret.capacity;
       delete ret._id;
       delete ret.__v;
+      delete ret.capacity;
       return ret;
     }
   }

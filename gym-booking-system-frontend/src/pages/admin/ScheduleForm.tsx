@@ -4,10 +4,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from '../../utils/axios';
 
 interface Class {
-  _id: string;
+  id: string;
   name: string;
   instructor: {
-    _id: string;
+    id: string;
     username: string;
   };
   duration: number;
@@ -17,8 +17,8 @@ interface ScheduleFormData {
   classId: string;
   startTime: string;
   endTime: string;
-  totalSpots: number;
-  location: string;
+  maxCapacity: number;
+  room: string;
 }
 
 interface ApiResponse<T> {
@@ -37,15 +37,15 @@ const ScheduleForm = () => {
     classId: '',
     startTime: '',
     endTime: '',
-    totalSpots: 20,
-    location: '',
+    maxCapacity: 20,
+    room: '',
   });
 
   // Fetch classes
   const { data: classesResponse } = useQuery<ApiResponse<Class[]>>({
     queryKey: ['classes'],
     queryFn: async () => {
-      const response = await axios.get('/api/classes');
+      const response = await axios.get('/classes');
       return response.data;
     },
   });
@@ -70,8 +70,8 @@ const ScheduleForm = () => {
         classId: scheduleData.classId._id,
         startTime: new Date(scheduleData.startTime).toISOString().slice(0, 16),
         endTime: new Date(scheduleData.endTime).toISOString().slice(0, 16),
-        totalSpots: scheduleData.totalSpots,
-        location: scheduleData.location,
+        maxCapacity: scheduleData.totalSpots,
+        room: scheduleData.location,
       });
     }
   }, [scheduleResponse]);
@@ -80,9 +80,9 @@ const ScheduleForm = () => {
   const mutation = useMutation({
     mutationFn: async (data: ScheduleFormData) => {
       if (isEditMode) {
-        return axios.put(`/api/schedules/${id}`, data);
+        return axios.put(`/schedules/${id}`, data);
       }
-      return axios.post('/api/schedules', data);
+      return axios.post('/schedules', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['schedules'] });
@@ -92,7 +92,13 @@ const ScheduleForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutation.mutate(formData);
+    // 确保日期时间格式正确
+    const submitData = {
+      ...formData,
+      startTime: new Date(formData.startTime).toISOString(),
+      endTime: new Date(formData.endTime).toISOString(),
+    };
+    mutation.mutate(submitData);
   };
 
   const handleChange = (
@@ -101,13 +107,13 @@ const ScheduleForm = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'totalSpots' ? Number(value) : value,
+      [name]: name === 'maxCapacity' ? Number(value) : value,
     }));
   };
 
   const handleClassChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const classId = e.target.value;
-    const selectedClass = classes.find((c) => c._id === classId);
+    const selectedClass = classes.find((c) => c.id === classId);
     
     if (selectedClass && formData.startTime) {
       const startTime = new Date(formData.startTime);
@@ -122,14 +128,14 @@ const ScheduleForm = () => {
     } else {
       setFormData((prev) => ({
         ...prev,
-        class: classId,
+        classId,
       }));
     }
   };
 
   const handleStartTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const startTime = e.target.value;
-    const selectedClass = classes.find((c) => c._id === formData.classId);
+    const selectedClass = classes.find((c) => c.id === formData.classId);
     
     if (selectedClass) {
       const endTime = new Date(startTime);
@@ -156,12 +162,12 @@ const ScheduleForm = () => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="class" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="classId" className="block text-sm font-medium text-gray-700">
             Class
           </label>
           <select
-            name="class"
-            id="class"
+            name="classId"
+            id="classId"
             required
             value={formData.classId}
             onChange={handleClassChange}
@@ -169,7 +175,7 @@ const ScheduleForm = () => {
           >
             <option value="">Select Class</option>
             {classes.map((classItem) => (
-              <option key={classItem._id} value={classItem._id}>
+              <option key={classItem.id} value={classItem.id}>
                 {classItem.name} {classItem.instructor?.username ? `(Instructor: ${classItem.instructor.username})` : ''}
               </option>
             ))}
@@ -216,7 +222,7 @@ const ScheduleForm = () => {
             id="maxCapacity"
             min="1"
             required
-            value={formData.totalSpots}
+            value={formData.maxCapacity}
             onChange={handleChange}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           />
@@ -231,7 +237,7 @@ const ScheduleForm = () => {
             name="room"
             id="room"
             required
-            value={formData.location}
+            value={formData.room}
             onChange={handleChange}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           />

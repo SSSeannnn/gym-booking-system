@@ -5,25 +5,21 @@ import axios from '../../utils/axios';
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface Class {
-  _id: string;
+  id: string;
   name: string;
+  instructor?: any;
 }
 
 interface Schedule {
-  _id: string;
-  classId: {
-    _id: string;
-    name: string;
-  };
-  instructor: {
-    _id: string;
-    username: string;
-  };
+  id: string;
+  className?: string;
+  instructor?: any;
   startTime: string;
   endTime: string;
   totalSpots: number;
   availableSpots: number;
-  location: string;
+  room: string;
+  maxCapacity: number;
 }
 
 interface ApiResponse<T> {
@@ -174,7 +170,7 @@ const ScheduleManagement = () => {
           >
             <option key="all" value="">All Classes</option>
             {classes.map((classItem) => (
-              <option key={classItem._id} value={classItem._id}>
+              <option key={classItem.id} value={classItem.id}>
                 {classItem.name}
               </option>
             ))}
@@ -186,41 +182,43 @@ const ScheduleManagement = () => {
         {schedules.length > 0 ? (
           <ul className="divide-y divide-gray-200">
             {schedules.map((schedule) => (
-              <li key={schedule._id}>
+              <li key={schedule.id}>
                 <div className="px-4 py-4 sm:px-6">
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
                       <h3 className="text-lg font-medium text-gray-900 truncate">
-                        {schedule.classId.name}
+                        {schedule.className || '未知课程'}
                       </h3>
                       <div className="mt-2 flex flex-wrap gap-4 text-sm text-gray-500">
-                        <div key="instructor">
+                        <div>
                           <span className="font-medium">Instructor:</span>{' '}
-                          {schedule.instructor.username}
+                          {schedule.instructor?.username || schedule.instructor?.name || '未分配'}
                         </div>
-                        <div key="time">
+                        <div>
                           <span className="font-medium">Time:</span>{' '}
                           {new Date(schedule.startTime).toLocaleString()} -{' '}
                           {new Date(schedule.endTime).toLocaleString()}
                         </div>
-                        <div key="room">
-                          <span className="font-medium">Room:</span> {schedule.location}
+                        <div>
+                          <span className="font-medium">Room:</span> {schedule.room}
                         </div>
-                        <div key="bookings">
+                        <div>
                           <span className="font-medium">Bookings:</span>{' '}
-                          {schedule.totalSpots - schedule.availableSpots}/{schedule.totalSpots}
+                          {typeof schedule.maxCapacity === 'number' && typeof schedule.availableSpots === 'number'
+                            ? `${schedule.maxCapacity - schedule.availableSpots}/${schedule.maxCapacity}`
+                            : 'N/A'}
                         </div>
                       </div>
                     </div>
                     <div className="flex space-x-2">
                       <Link
-                        to={`/admin/schedules/${schedule._id}/edit`}
+                        to={`/admin/schedules/${schedule.id}/edit`}
                         className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                       >
                         <PencilIcon className="h-5 w-5" aria-hidden="true" />
                       </Link>
                       <button
-                        onClick={() => handleDelete(schedule._id)}
+                        onClick={() => handleDelete(schedule.id)}
                         disabled={isDeleting}
                         className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
                       >

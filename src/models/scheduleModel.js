@@ -14,7 +14,7 @@ const scheduleSchema = new mongoose.Schema({
     type: Date,
     required: [true, 'End time is required']
   },
-  totalSpots: {
+  maxCapacity: {
     type: Number,
     required: [true, 'Maximum capacity is required'],
     min: [1, 'Maximum capacity must be at least 1']
@@ -22,7 +22,7 @@ const scheduleSchema = new mongoose.Schema({
   availableSpots: {
     type: Number,
     default: function() {
-      return this.totalSpots;
+      return this.maxCapacity;
     },
     min: [0, 'Available spots cannot be negative']
   },
@@ -31,9 +31,9 @@ const scheduleSchema = new mongoose.Schema({
     enum: ['scheduled', 'cancelled', 'completed'],
     default: 'scheduled'
   },
-  location: {
+  room: {
     type: String,
-    required: [true, 'Location is required'],
+    required: [true, 'Room is required'],
     trim: true
   }
 }, {
@@ -77,10 +77,10 @@ scheduleSchema.pre('save', function(next) {
   next();
 });
 
-// Pre-save middleware to validate availableSpots doesn't exceed totalSpots
+// Pre-save middleware to validate availableSpots doesn't exceed maxCapacity
 scheduleSchema.pre('save', function(next) {
-  if (this.availableSpots > this.totalSpots) {
-    next(new Error('Available spots cannot exceed total capacity'));
+  if (this.availableSpots > this.maxCapacity) {
+    next(new Error('Available spots cannot exceed maximum capacity'));
   }
   next();
 });
