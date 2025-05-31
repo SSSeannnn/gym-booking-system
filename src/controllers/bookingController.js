@@ -21,19 +21,19 @@ const createBookingHandler = async (req, res, next) => {
     const booking = await createBooking(bookingData);
     res.status(201).json({
       success: true,
-      message: '预约创建成功',
+      message: 'Booking created successfully',
       data: booking
     });
   } catch (error) {
-    if (error.message === '无效的排班ID') {
+    if (error.message === 'Invalid schedule ID') {
       return res.status(404).json({ success: false, message: error.message });
-    } else if (error.message === '课程已满') {
+    } else if (error.message === 'Class is full') {
       return res.status(400).json({ success: false, message: error.message });
-    } else if (error.message === '您已经预约过这个课程') {
+    } else if (error.message === 'You have already booked this class') {
       return res.status(409).json({ success: false, message: error.message });
-    } else if (error.message === '用户不存在') {
+    } else if (error.message === 'User does not exist') {
       return res.status(404).json({ success: false, message: error.message });
-    } else if (error.message === '只有会员才能预订课程') {
+    } else if (error.message === 'Only members can book classes') {
       return res.status(403).json({ success: false, message: error.message });
     } else {
       return res.status(400).json({ success: false, message: error.message });
@@ -92,23 +92,23 @@ const cancelBookingHandler = async (req, res, next) => {
     
     res.status(200).json({
       success: true,
-      message: '预约已成功取消',
+      message: 'Booking cancelled successfully',
       data: booking
     });
   } catch (error) {
-    if (error.message === '预约不存在') {
+    if (error.message === 'Booking does not exist') {
       return res.status(404).json({
         success: false,
         message: error.message
       });
     }
-    if (error.message === '无权操作此预约') {
+    if (error.message === 'You are not authorized to cancel this booking') {
       return res.status(403).json({
         success: false,
         message: error.message
       });
     }
-    if (error.message === '只能取消已确认的预约') {
+    if (error.message === 'Only confirmed bookings can be cancelled') {
       return res.status(400).json({
         success: false,
         message: error.message

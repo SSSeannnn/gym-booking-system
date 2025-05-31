@@ -11,12 +11,12 @@ async function createBooking(bookingData) {
   // 检查课程排班是否存在
   const schedule = await Schedule.findById(bookingData.scheduleId);
   if (!schedule) {
-    throw new Error('无效的排班ID');
+    throw new Error('Invalid schedule ID');
   }
 
   // 检查是否已满
   if (schedule.currentBookings >= schedule.maxCapacity) {
-    throw new Error('课程已满');
+    throw new Error('Class is full');
   }
 
   // 检查用户是否已经预约过这个课程
@@ -25,17 +25,17 @@ async function createBooking(bookingData) {
     scheduleId: bookingData.scheduleId
   });
   if (existingBooking) {
-    throw new Error('您已经预约过这个课程');
+    throw new Error('You have already booked this class');
   }
 
   // 检查用户是否符合预订条件（例如，会员级别不够）
   const user = await User.findById(bookingData.userId);
   if (!user) {
-    throw new Error('用户不存在');
+    throw new Error('User does not exist');
   }
   // 假设用户需要是会员才能预订
   if (user.role !== 'customer') {
-    throw new Error('只有会员才能预订课程');
+    throw new Error('Only members can book classes');
   }
 
   // 创建预约
@@ -87,17 +87,17 @@ const cancelBooking = async (bookingId, userId) => {
   // 查找预约并验证所有权
   const booking = await Booking.findById(bookingId);
   if (!booking) {
-    throw new Error('预约不存在');
+    throw new Error('Booking does not exist');
   }
 
   // 验证预约是否属于该用户
   if (booking.userId.toString() !== userId) {
-    throw new Error('无权操作此预约');
+    throw new Error('You are not authorized to cancel this booking');
   }
 
   // 检查预约状态
   if (booking.status !== 'confirmed') {
-    throw new Error('只能取消已确认的预约');
+    throw new Error('Only confirmed bookings can be cancelled');
   }
 
   // 更新预约状态
@@ -131,7 +131,7 @@ async function getBookingById(bookingId) {
     .populate('userId', 'email');
   
   if (!booking) {
-    throw new Error('预约不存在');
+    throw new Error('Booking does not exist');
   }
   
   return booking;

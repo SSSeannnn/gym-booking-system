@@ -11,9 +11,9 @@ const statusColors = {
 };
 
 const statusText = {
-  active: '有效',
-  expired: '已过期',
-  cancelled: '已取消'
+  active: 'active',
+  expired: 'expired',
+  cancelled: 'cancelled'
 };
 
 export default function Membership() {
@@ -45,7 +45,7 @@ export default function Membership() {
       }, 3000);
     },
     onError: (error: any) => {
-      setErrorMessage(error.message || '取消会员失败，请稍后重试');
+      setErrorMessage(error.message || 'Failed to cancel membership, please try again later');
       setTimeout(() => {
         setErrorMessage(null);
       }, 3000);
@@ -64,7 +64,7 @@ export default function Membership() {
       }, 3000);
     },
     onError: (error: any) => {
-      setErrorMessage(error.message || '续订会员失败，请稍后重试');
+      setErrorMessage(error.message || 'Failed to renew membership, please try again later');
       setTimeout(() => {
         setErrorMessage(null);
       }, 3000);
@@ -79,7 +79,7 @@ export default function Membership() {
     if (selectedPlanId) {
       renewMutation.mutate(selectedPlanId);
     } else {
-      setErrorMessage('请选择一个会员计划');
+      setErrorMessage('Please select a membership plan');
       setTimeout(() => {
         setErrorMessage(null);
       }, 3000);
@@ -97,7 +97,7 @@ export default function Membership() {
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="text-red-500">加载会员信息失败，请稍后重试</div>
+        <div className="text-red-500">Failed to load membership information, please try again later</div>
       </div>
     );
   }
@@ -107,7 +107,7 @@ export default function Membership() {
       {/* 成功提示 */}
       {showSuccessMessage && (
         <div className="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded z-50">
-          <p>操作成功！</p>
+          <p>Operation successful!</p>
         </div>
       )}
 
@@ -118,7 +118,7 @@ export default function Membership() {
         </div>
       )}
 
-      <h1 className="text-3xl font-bold mb-8">会员状态</h1>
+      <h1 className="text-3xl font-bold mb-8">Membership Status</h1>
 
       {/* 会员信息卡片 */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -137,25 +137,25 @@ export default function Membership() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h3 className="text-lg font-medium mb-4">会员详情</h3>
+            <h3 className="text-lg font-medium mb-4">Membership Details</h3>
             <div className="space-y-3">
               <div>
-                <p className="text-sm text-gray-500">开始日期</p>
-                <p className="font-medium">{format(new Date(membership?.startDate || ''), 'yyyy年MM月dd日')}</p>
+                <p className="text-sm text-gray-500">Start Date</p>
+                <p className="font-medium">{format(new Date(membership?.startDate || ''), 'yyyy/MM/dd')}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">到期日期</p>
-                <p className="font-medium">{format(new Date(membership?.endDate || ''), 'yyyy年MM月dd日')}</p>
+                <p className="text-sm text-gray-500">End Date</p>
+                <p className="font-medium">{format(new Date(membership?.endDate || ''), 'yyyy/MM/dd')}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">自动续费</p>
-                <p className="font-medium">{membership?.autoRenew ? '已开启' : '未开启'}</p>
+                <p className="text-sm text-gray-500">Auto Renew</p>
+                <p className="font-medium">{membership?.autoRenew ? 'Enabled' : 'Disabled'}</p>
               </div>
             </div>
           </div>
 
           <div>
-            <h3 className="text-lg font-medium mb-4">操作</h3>
+            <h3 className="text-lg font-medium mb-4">Actions</h3>
             <div className="space-y-4">
               {membership?.status === 'active' && (
                 <button
@@ -163,7 +163,7 @@ export default function Membership() {
                   className="w-full py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                   disabled={cancelMutation.isPending}
                 >
-                  {cancelMutation.isPending ? '处理中...' : '取消会员'}
+                  {cancelMutation.isPending ? 'Processing...' : 'Cancel Membership'}
                 </button>
               )}
               {membership?.status !== 'active' && (
@@ -171,7 +171,7 @@ export default function Membership() {
                   onClick={() => setShowRenewModal(true)}
                   className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
-                  续订会员
+                  Renew Membership
                 </button>
               )}
             </div>
@@ -183,9 +183,9 @@ export default function Membership() {
       {showCancelModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-xl font-semibold mb-4">确认取消会员</h3>
+            <h3 className="text-xl font-semibold mb-4">Confirm Cancel Membership</h3>
             <p className="text-gray-600 mb-6">
-              您确定要取消会员吗？取消后，您将无法继续享受会员权益，直到您重新订阅。
+              Are you sure you want to cancel your membership? After cancellation, you will not be able to continue enjoying membership benefits until you renew.
             </p>
             <div className="flex space-x-4">
               <button
@@ -193,14 +193,14 @@ export default function Membership() {
                 className="flex-1 py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                 disabled={cancelMutation.isPending}
               >
-                {cancelMutation.isPending ? '处理中...' : '确认取消'}
+                {cancelMutation.isPending ? 'Processing...' : 'Confirm Cancel'}
               </button>
               <button
                 onClick={() => setShowCancelModal(false)}
                 className="flex-1 py-2 px-4 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                 disabled={cancelMutation.isPending}
               >
-                返回
+                Back
               </button>
             </div>
           </div>
@@ -211,7 +211,7 @@ export default function Membership() {
       {showRenewModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-xl font-semibold mb-4">选择会员计划</h3>
+            <h3 className="text-xl font-semibold mb-4">Select Membership Plan</h3>
             {isLoadingPlans ? (
               <div className="flex justify-center items-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
@@ -221,20 +221,20 @@ export default function Membership() {
                 <div className="space-y-4 max-h-96 overflow-y-auto">
                   {plans?.map((plan: MembershipPlan) => (
                     <div
-                      key={plan.id}
+                      key={plan._id}
                       className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                        selectedPlanId === plan.id
+                        selectedPlanId === plan._id
                           ? 'border-blue-500 bg-blue-50'
                           : 'hover:border-blue-500'
                       }`}
-                      onClick={() => handlePlanSelect(plan.id)}
+                      onClick={() => handlePlanSelect(plan._id)}
                     >
                       <div className="flex justify-between items-center">
                         <div>
                           <h4 className="font-medium">{plan.name}</h4>
                           <p className="text-sm text-gray-500">{plan.description}</p>
                           <div className="mt-2">
-                            <h5 className="text-sm font-medium text-gray-700">会员权益：</h5>
+                            <h5 className="text-sm font-medium text-gray-700">Membership Benefits:</h5>
                             <ul className="mt-1 space-y-1">
                               {plan.features.map((feature, index) => (
                                 <li key={index} className="text-sm text-gray-600 flex items-center">
@@ -249,7 +249,7 @@ export default function Membership() {
                         </div>
                         <div className="text-right">
                           <p className="font-semibold text-lg">¥{plan.price}</p>
-                          <p className="text-sm text-gray-500">/{plan.duration}个月</p>
+                          <p className="text-sm text-gray-500">/{plan.durationDays} days</p>
                         </div>
                       </div>
                     </div>
@@ -261,7 +261,7 @@ export default function Membership() {
                     className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     disabled={renewMutation.isPending || !selectedPlanId}
                   >
-                    {renewMutation.isPending ? '处理中...' : '确认续订'}
+                    {renewMutation.isPending ? 'Processing...' : 'Confirm Renew'}
                   </button>
                   <button
                     onClick={() => {
@@ -271,7 +271,7 @@ export default function Membership() {
                     className="flex-1 py-2 px-4 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                     disabled={renewMutation.isPending}
                   >
-                    取消
+                    Cancel
                   </button>
                 </div>
               </>

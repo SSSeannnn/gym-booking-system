@@ -7,19 +7,19 @@ const Joi = require('joi');
  */
 const validateRequest = (schema) => {
   return (req, res, next) => {
-    console.log('validateRequest - 开始验证请求体:', JSON.stringify(req.body, null, 2));
-    console.log('validateRequest - 使用的验证模式:', schema.describe());
+    console.log('validateRequest - Starting to validate request body:', JSON.stringify(req.body, null, 2));
+    console.log('validateRequest - Using validation schema:', schema.describe());
 
     const { error } = schema.validate(req.body);
     if (error) {
-      console.log('validateRequest - 验证失败:', error.details);
+      console.log('validateRequest - Authentication failed:', error.details);
       const errorMessage = error.details.map(detail => detail.message).join(', ');
       return res.status(400).json({
         success: false,
-        message: `输入验证失败: ${errorMessage}`
+        message: `Input validation failed: ${errorMessage}`
       });
     }
-    console.log('validateRequest - 验证通过');
+    console.log('validateRequest - Validation passed');
     next();
   };
 };

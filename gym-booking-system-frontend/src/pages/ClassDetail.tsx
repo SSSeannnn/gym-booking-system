@@ -89,7 +89,7 @@ const ClassDetail = () => {
             <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
               <h1 className="text-3xl md:text-4xl font-bold">{classDetail.name}</h1>
               <div className="flex items-center mt-2">
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${levelColors[classDetail.level]}`}>
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${levelColors[classDetail.level as keyof typeof levelColors]}`}>
                   {classDetail.level}
                 </span>
                 <span className="ml-4 text-sm">
@@ -111,7 +111,7 @@ const ClassDetail = () => {
                 <div className="mb-6">
                   <h3 className="text-lg font-medium mb-2">Requirements</h3>
                   <ul className="list-disc list-inside text-gray-600">
-                    {classDetail.requirements.map((req, index) => (
+                    {classDetail.requirements.map((req: string, index: number) => (
                       <li key={index}>{req}</li>
                     ))}
                   </ul>
@@ -122,7 +122,7 @@ const ClassDetail = () => {
                 <div className="mb-6">
                   <h3 className="text-lg font-medium mb-2">Benefits</h3>
                   <ul className="list-disc list-inside text-gray-600">
-                    {classDetail.benefits.map((benefit, index) => (
+                    {classDetail.benefits.map((benefit: string, index: number) => (
                       <li key={index}>{benefit}</li>
                     ))}
                   </ul>
@@ -133,7 +133,7 @@ const ClassDetail = () => {
                 <div>
                   <h3 className="text-lg font-medium mb-2">Equipment Needed</h3>
                   <ul className="list-disc list-inside text-gray-600">
-                    {classDetail.equipment.map((item, index) => (
+                    {classDetail.equipment.map((item: string, index: number) => (
                       <li key={index}>{item}</li>
                     ))}
                   </ul>
@@ -168,7 +168,7 @@ const ClassDetail = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {schedules?.map((schedule: Schedule) => (
                 <div
-                  key={schedule.id}
+                  key={schedule._id}
                   className="border rounded-lg p-4 hover:shadow-md transition-shadow"
                 >
                   <div className="flex justify-between items-start mb-4">

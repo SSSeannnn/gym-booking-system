@@ -54,7 +54,7 @@ const getRevenueStatsHandler = async (req, res, next) => {
     if (!startDate || !endDate) {
       return res.status(400).json({
         success: false,
-        message: '请提供开始日期和结束日期'
+        message: 'Please provide start date and end date'
       });
     }
 

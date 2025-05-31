@@ -3,26 +3,26 @@ const Joi = require('joi');
 const schemas = {
   register: Joi.object({
     email: Joi.string().email().required().messages({
-      'string.email': '请提供有效的邮箱地址',
-      'any.required': '邮箱是必需的'
+      'string.email': 'Please provide a valid email address',
+      'any.required': 'Email is required'
     }),
     password: Joi.string().min(6).required().messages({
-      'string.min': '密码至少需要6个字符',
-      'any.required': '密码是必需的'
+      'string.min': 'Password must be at least 6 characters',
+      'any.required': 'Password is required'
     }),
     role: Joi.string().valid('admin', 'instructor', 'customer').default('customer'),
     planId: Joi.string().required().messages({
-      'any.required': '请选择会员计划'
+      'any.required': 'Please select a membership plan'
     })
   }),
 
   login: Joi.object({
     email: Joi.string().email().required().messages({
-      'string.email': '请提供有效的邮箱地址',
-      'any.required': '邮箱是必需的'
+      'string.email': 'Please provide a valid email address',
+      'any.required': 'Email is required'
     }),
     password: Joi.string().required().messages({
-      'any.required': '密码是必需的'
+      'any.required': 'Password is required'
     })
   })
 };

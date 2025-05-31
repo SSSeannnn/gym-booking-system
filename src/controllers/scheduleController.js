@@ -21,14 +21,14 @@ const createScheduleHandler = async (req, res, next) => {
     const newSchedule = await createSchedule(scheduleData);
     res.status(201).json({
       success: true,
-      message: '课程排班创建成功',
+      message: 'Schedule created successfully',
       data: newSchedule
     });
   } catch (error) {
     if (error.message === 'Class not found') {
       return res.status(404).json({
         success: false,
-        message: '课程不存在'
+        message: 'Class not found'
       });
     }
     next(error);
@@ -48,7 +48,7 @@ const getAllSchedulesHandler = async (req, res, next) => {
       return res.status(200).json({
         success: true,
         data: [],
-        message: '没有找到符合条件的排班'
+        message: 'No schedules found'
       });
     }
     res.status(200).json({
@@ -77,7 +77,7 @@ const getScheduleByIdHandler = async (req, res, next) => {
     if (error.message === 'Schedule not found') {
       return res.status(404).json({
         success: false,
-        message: '排班不存在'
+        message: 'Schedule not found'
       });
     }
     next(error);
@@ -95,14 +95,14 @@ const updateScheduleHandler = async (req, res, next) => {
     const updatedSchedule = await updateSchedule(req.params.id, req.body);
     res.status(200).json({
       success: true,
-      message: '课程排班更新成功',
+      message: 'Schedule updated successfully',
       data: updatedSchedule
     });
   } catch (error) {
     if (error.message === 'Schedule not found') {
       return res.status(404).json({
         success: false,
-        message: '排班不存在'
+        message: 'Schedule not found'
       });
     }
     next(error);
@@ -120,13 +120,13 @@ const deleteScheduleHandler = async (req, res, next) => {
     await deleteSchedule(req.params.id);
     res.status(200).json({
       success: true,
-      message: '课程排班删除成功'
+      message: 'Schedule deleted successfully'
     });
   } catch (error) {
     if (error.message === 'Schedule not found') {
       return res.status(404).json({
         success: false,
-        message: '排班不存在'
+        message: 'Schedule not found'
       });
     }
     next(error);

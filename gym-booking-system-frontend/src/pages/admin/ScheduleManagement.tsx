@@ -48,7 +48,7 @@ const ScheduleManagement = () => {
       const params = new URLSearchParams();
       if (filters.date) params.append('date', filters.date);
       if (filters.classId) params.append('classId', filters.classId);
-      const response = await axios.get(`/api/schedules?${params.toString()}`);
+      const response = await axios.get(`/schedules?${params.toString()}`);
       console.log('Schedules response:', response.data);
       return response.data;
     },
@@ -59,7 +59,7 @@ const ScheduleManagement = () => {
     queryKey: ['classes'],
     queryFn: async () => {
       console.log('Fetching classes');
-      const response = await axios.get('/api/classes');
+      const response = await axios.get('/classes');
       console.log('Classes response:', response.data);
       return response.data;
     },
@@ -71,7 +71,7 @@ const ScheduleManagement = () => {
   // Delete schedule mutation
   const deleteMutation = useMutation({
     mutationFn: async (scheduleId: string) => {
-      await axios.delete(`/api/schedules/${scheduleId}`);
+      await axios.delete(`/schedules/${scheduleId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['schedules'] });

@@ -20,7 +20,7 @@ const CUSTOMER_EMAILS = [
 ];
 const CUSTOMER_PASSWORD = 'customerpassword123';
 
-describe('预约系统测试', () => {
+describe('Booking System Tests', () => {
   let testUser;
   let testToken;
   let testSchedule;
@@ -82,28 +82,28 @@ describe('预约系统测试', () => {
   });
 
   describe('DELETE /api/bookings/:bookingId', () => {
-    it('应该成功取消自己的预约', async () => {
+    it('should successfully cancel own booking', async () => {
       const response = await request(app)
         .delete(`/api/bookings/${testBooking._id}`)
         .set('Authorization', `Bearer ${testToken}`)
         .expect(200);
 
       expect(response.body.success).toBe(true);
-      expect(response.body.message).toBe('预约已成功取消');
+      expect(response.body.message).toBe('Booking cancelled successfully');
       expect(response.body.data.status).toBe('cancelled');
 
-      // 验证排班可用名额已更新
+      // Verify schedule available slots have been updated
       const updatedSchedule = await Schedule.findById(testSchedule._id);
       expect(updatedSchedule.currentBookings).toBe(0);
     });
 
-    it('未登录用户应该无法取消预约', async () => {
+    it('unauthenticated users should not be able to cancel booking', async () => {
       await request(app)
         .delete(`/api/bookings/${testBooking._id}`)
         .expect(401);
     });
 
-    it('应该无法取消不存在的预约', async () => {
+    it('should not be able to cancel non-existent booking', async () => {
       const nonExistentId = new mongoose.Types.ObjectId();
       const response = await request(app)
         .delete(`/api/bookings/${nonExistentId}`)
@@ -111,10 +111,10 @@ describe('预约系统测试', () => {
         .expect(404);
 
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toBe('预约不存在');
+      expect(response.body.message).toBe('Booking does not exist');
     });
 
-    it('应该无法取消其他用户的预约', async () => {
+    it('should not be able to cancel other users\' booking', async () => {
       // 创建另一个用户
       const otherUser = await User.create({
         email: 'other@example.com',
@@ -122,7 +122,7 @@ describe('预约系统测试', () => {
         role: 'customer'
       });
 
-      // 获取另一个用户的token
+      // Get another user's token
       const otherLoginResponse = await request(app)
         .post('/api/auth/login')
         .send({
@@ -138,14 +138,14 @@ describe('预约系统测试', () => {
         .expect(403);
 
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toBe('无权操作此预约');
+      expect(response.body.message).toBe('You are not authorized to cancel this booking');
 
-      // 清理另一个用户
+      // Clean up another user
       await User.deleteOne({ _id: otherUser._id });
     });
 
-    it('应该无法取消已取消的预约', async () => {
-      // 先取消预约
+    it('should not be able to cancel cancelled booking', async () => {
+      // First cancel the booking
       await Booking.findByIdAndUpdate(testBooking._id, { status: 'cancelled' });
 
       const response = await request(app)
@@ -154,7 +154,7 @@ describe('预约系统测试', () => {
         .expect(400);
 
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toBe('只能取消已确认的预约');
+      expect(response.body.message).toBe('Only confirmed bookings can be cancelled');
     });
   });
 });

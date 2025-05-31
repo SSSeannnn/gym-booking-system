@@ -127,17 +127,17 @@ const getUserStatsHandler = async (req, res, next) => {
  */
 const createUserHandler = async (req, res, next) => {
   try {
-    console.log('POST /api/users - 收到的请求体:', JSON.stringify(req.body, null, 2));
-    console.log('当前登录用户:', JSON.stringify(req.user, null, 2));
+    console.log('POST /api/users - Received request body:', JSON.stringify(req.body, null, 2));
+    console.log('Currently logged in user:', JSON.stringify(req.user, null, 2));
 
     const userData = {
       ...req.body,
       createdBy: req.user._id // 设置创建者为当前登录用户
     };
-    console.log('准备创建的用户数据:', JSON.stringify(userData, null, 2));
+    console.log('Preparing to create user data:', JSON.stringify(userData, null, 2));
 
     const newUser = await createUser(userData);
-    console.log('用户创建成功:', JSON.stringify(newUser, null, 2));
+    console.log('User created successfully:', JSON.stringify(newUser, null, 2));
 
     res.status(201).json({
       success: true,
@@ -145,7 +145,7 @@ const createUserHandler = async (req, res, next) => {
       data: newUser
     });
   } catch (error) {
-    console.error('创建用户时发生错误:', error);
+    console.error('Error creating user:', error);
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,

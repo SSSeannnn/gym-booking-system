@@ -6,25 +6,25 @@
  * @param {Function} next - 下一个中间件函数
  */
 const errorHandler = (err, req, res, next) => {
-  console.error('错误:', err);
+  console.error('Error:', err);
 
-  // 默认错误状态码和消息
+  // Default error status code and message
   let statusCode = err.statusCode || 500;
-  let message = err.message || '服务器内部错误';
+  let message = err.message || 'Internal server error';
 
-  // 处理特定类型的错误
+  // Handle specific error types
   if (err.name === 'ValidationError') {
     statusCode = 400;
     message = Object.values(err.errors).map(error => error.message).join(', ');
   } else if (err.name === 'JsonWebTokenError') {
     statusCode = 401;
-    message = '无效的令牌';
+    message = 'Invalid token';
   } else if (err.name === 'TokenExpiredError') {
     statusCode = 401;
-    message = '令牌已过期';
+    message = 'Token expired';
   }
 
-  // 发送错误响应
+  // Send error response
   res.status(statusCode).json({
     success: false,
     message,

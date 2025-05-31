@@ -18,16 +18,16 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: [true, '邮箱是必需的'],
+    required: [true, 'Email is required'],
     unique: true,
     trim: true,
     lowercase: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, '请提供有效的邮箱地址']
+    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email address']
   },
   password: {
     type: String,
-    required: [true, '密码是必需的'],
-    minlength: [6, '密码至少需要6个字符']
+    required: [true, 'Password is required'],
+    minlength: [6, 'Password must be at least 6 characters']
   },
   role: {
     type: String,
@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// 密码加密中间件
+// Password encryption middleware
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
   
@@ -52,7 +52,7 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-// 密码验证方法
+// Password verification method
 userSchema.methods.comparePassword = async function(candidatePassword) {
   try {
     return await bcrypt.compare(candidatePassword, this.password);

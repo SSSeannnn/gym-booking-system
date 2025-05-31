@@ -4,28 +4,28 @@ const app = require('../src/app');
 const User = require('../src/models/userModel');
 const MembershipPlan = require('../src/models/membershipPlanModel');
 
-describe('会员系统测试', () => {
+describe('Membership System Tests', () => {
   let testUser;
   let testToken;
   let testPlan;
 
   beforeAll(async () => {
-    // 确保数据库连接
+    // Ensure database connection
     if (mongoose.connection.readyState === 0) {
       await mongoose.connect(process.env.MONGODB_URI);
     }
 
-    // 创建测试会员计划
+    // Create test membership plan
     testPlan = await MembershipPlan.create({
-      name: '测试月度会员',
+      name: 'Test Monthly Membership',
       durationDays: 30,
       price: 99,
-      description: '测试用月度会员计划',
-      features: ['基础功能'],
+      description: 'Test monthly membership plan',
+      features: ['Basic features'],
       isActive: true
     });
 
-    // 创建测试用户
+    // Create test user
     testUser = await User.create({
       email: 'test@example.com',
       password: 'password123',
@@ -40,7 +40,7 @@ describe('会员系统测试', () => {
       }
     });
 
-    // 获取测试用户的token
+    // Get test user's token
     const loginResponse = await request(app)
       .post('/api/auth/login')
       .send({
@@ -52,14 +52,14 @@ describe('会员系统测试', () => {
   });
 
   afterAll(async () => {
-    // 清理测试数据
+    // Clean up test data
     await User.deleteMany({});
     await MembershipPlan.deleteMany({});
     await mongoose.connection.close();
   });
 
   describe('GET /api/memberships/plans', () => {
-    it('应该返回所有可用的会员计划', async () => {
+    it('should return all available membership plans', async () => {
       const response = await request(app)
         .get('/api/memberships/plans')
         .expect(200);
@@ -73,7 +73,7 @@ describe('会员系统测试', () => {
   });
 
   describe('GET /api/memberships/me/membership', () => {
-    it('应该返回当前用户的会员状态', async () => {
+    it('should return the current user\'s membership status', async () => {
       const response = await request(app)
         .get('/api/memberships/me/membership')
         .set('Authorization', `Bearer ${testToken}`)
@@ -85,7 +85,7 @@ describe('会员系统测试', () => {
       expect(response.body.data).toHaveProperty('endDate');
     });
 
-    it('未登录用户应该无法访问会员状态', async () => {
+    it('unauthenticated users should not be able to access membership status', async () => {
       await request(app)
         .get('/api/memberships/me/membership')
         .expect(401);
@@ -93,7 +93,7 @@ describe('会员系统测试', () => {
   });
 
   describe('POST /api/memberships/me/membership/cancel', () => {
-    it('应该成功取消会员订阅', async () => {
+    it('should successfully cancel membership subscription', async () => {
       const response = await request(app)
         .post('/api/memberships/me/membership/cancel')
         .set('Authorization', `Bearer ${testToken}`)
@@ -104,7 +104,7 @@ describe('会员系统测试', () => {
       expect(response.body.data.membership).toHaveProperty('autoRenew', false);
     });
 
-    it('未登录用户应该无法取消会员订阅', async () => {
+    it('unauthenticated users should not be able to cancel membership subscription', async () => {
       await request(app)
         .post('/api/memberships/me/membership/cancel')
         .expect(401);
@@ -112,7 +112,7 @@ describe('会员系统测试', () => {
   });
 
   describe('POST /api/memberships/me/membership/renew', () => {
-    it('应该成功续订会员', async () => {
+    it('should successfully renew membership', async () => {
       const response = await request(app)
         .post('/api/memberships/me/membership/renew')
         .set('Authorization', `Bearer ${testToken}`)
@@ -125,7 +125,7 @@ describe('会员系统测试', () => {
       expect(response.body.data.membership).toHaveProperty('planId', testPlan._id.toString());
     });
 
-    it('使用无效的会员计划ID应该返回错误', async () => {
+    it('should return an error when using an invalid membership plan ID', async () => {
       const response = await request(app)
         .post('/api/memberships/me/membership/renew')
         .set('Authorization', `Bearer ${testToken}`)
@@ -133,10 +133,10 @@ describe('会员系统测试', () => {
         .expect(400);
 
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toBe('无效的会员计划');
+      expect(response.body.message).toBe('Invalid membership plan');
     });
 
-    it('未登录用户应该无法续订会员', async () => {
+    it('unauthenticated users should not be able to renew membership', async () => {
       await request(app)
         .post('/api/memberships/me/membership/renew')
         .send({ planId: testPlan._id })

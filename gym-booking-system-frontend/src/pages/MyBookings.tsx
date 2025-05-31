@@ -67,7 +67,7 @@ export default function MyBookings() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {bookings?.map((booking) => (
+          {bookings?.map((booking: any) => (
             <div key={booking._id} className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
