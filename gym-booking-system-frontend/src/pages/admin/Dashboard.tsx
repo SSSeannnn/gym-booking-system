@@ -1,5 +1,7 @@
 import { useAuth } from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import axios from '../../utils/axios';
 import {
   UserGroupIcon,
   BookOpenIcon,
@@ -7,15 +9,38 @@ import {
   ClockIcon,
 } from '@heroicons/react/24/outline';
 
-const stats = [
-  { name: 'Total Users', value: '0', icon: UserGroupIcon },
-  { name: 'Active Classes', value: '0', icon: BookOpenIcon },
-  { name: 'Today\'s Schedules', value: '0', icon: CalendarIcon },
-  { name: 'Pending Bookings', value: '0', icon: ClockIcon },
-];
+interface User {
+  _id: string;
+  role: string;
+}
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message: string;
+}
 
 const AdminDashboard = () => {
   const { user } = useAuth();
+
+  // Fetch users for statistics
+  const { data: usersResponse } = useQuery<ApiResponse<User[]>>({
+    queryKey: ['users'],
+    queryFn: async () => {
+      const response = await axios.get('/users');
+      return response.data;
+    },
+  });
+
+  const users = usersResponse?.data || [];
+  const customerCount = users.filter(user => user.role === 'customer').length;
+
+  const stats = [
+    { name: 'Total Users', value: customerCount.toString(), icon: UserGroupIcon },
+    { name: 'Active Classes', value: '0', icon: BookOpenIcon },
+    { name: 'Today\'s Schedules', value: '0', icon: CalendarIcon },
+    { name: 'Pending Bookings', value: '0', icon: ClockIcon },
+  ];
 
   return (
     <div>

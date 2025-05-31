@@ -26,7 +26,7 @@ const ClassManagement = () => {
     queryFn: async () => {
       try {
         console.log('Fetching classes...');
-        const response = await axios.get('/api/classes');
+        const response = await axios.get('/classes');
         console.log('Classes response:', response.data);
         return response.data;
       } catch (error) {
@@ -40,7 +40,7 @@ const ClassManagement = () => {
   const deleteMutation = useMutation({
     mutationFn: async (classId: string) => {
       try {
-        await axios.delete(`/api/classes/${classId}`);
+        await axios.delete(`/classes/${classId}`);
       } catch (error) {
         console.error('Error deleting class:', error);
         throw error;

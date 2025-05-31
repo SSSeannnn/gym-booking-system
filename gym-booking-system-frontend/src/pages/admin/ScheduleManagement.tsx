@@ -172,7 +172,7 @@ const ScheduleManagement = () => {
             onChange={handleFilterChange}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           >
-            <option value="">All Classes</option>
+            <option key="all" value="">All Classes</option>
             {classes.map((classItem) => (
               <option key={classItem._id} value={classItem._id}>
                 {classItem.name}
@@ -194,19 +194,19 @@ const ScheduleManagement = () => {
                         {schedule.classId.name}
                       </h3>
                       <div className="mt-2 flex flex-wrap gap-4 text-sm text-gray-500">
-                        <div>
+                        <div key="instructor">
                           <span className="font-medium">Instructor:</span>{' '}
                           {schedule.instructor.username}
                         </div>
-                        <div>
+                        <div key="time">
                           <span className="font-medium">Time:</span>{' '}
                           {new Date(schedule.startTime).toLocaleString()} -{' '}
                           {new Date(schedule.endTime).toLocaleString()}
                         </div>
-                        <div>
+                        <div key="room">
                           <span className="font-medium">Room:</span> {schedule.location}
                         </div>
-                        <div>
+                        <div key="bookings">
                           <span className="font-medium">Bookings:</span>{' '}
                           {schedule.totalSpots - schedule.availableSpots}/{schedule.totalSpots}
                         </div>
