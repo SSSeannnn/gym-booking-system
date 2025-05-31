@@ -5,7 +5,8 @@ const {
   deleteUser,
   updateUserRole,
   getUserStats,
-  createUser
+  createUser,
+  getInstructors
 } = require('../services/userService');
 
 /**
@@ -156,6 +157,24 @@ const createUserHandler = async (req, res, next) => {
   }
 };
 
+/**
+ * 获取所有教练
+ * @param {Object} req - Express请求对象
+ * @param {Object} res - Express响应对象
+ * @param {Function} next - Express下一个中间件函数
+ */
+const getInstructorsHandler = async (req, res, next) => {
+  try {
+    const instructors = await getInstructors();
+    res.status(200).json({
+      success: true,
+      data: instructors
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAllUsersHandler,
   getUserByIdHandler,
@@ -163,5 +182,6 @@ module.exports = {
   deleteUserHandler,
   updateUserRoleHandler,
   getUserStatsHandler,
-  createUserHandler
+  createUserHandler,
+  getInstructorsHandler
 }; 

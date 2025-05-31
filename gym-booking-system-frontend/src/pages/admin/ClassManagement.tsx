@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from '../../utils/axios';
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface Class {
-  _id: string;
+  id: string;
   name: string;
   description: string;
   instructor: {
@@ -14,6 +14,14 @@ interface Class {
   };
   duration: number;
   maxCapacity: number;
+  level: string;
+  category: string;
+}
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message: string;
 }
 
 const ClassManagement = () => {
@@ -21,7 +29,7 @@ const ClassManagement = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Fetch classes
-  const { data: classes, isLoading, error } = useQuery<Class[]>({
+  const { data: classesResponse, isLoading, error } = useQuery<ApiResponse<Class[]>>({
     queryKey: ['classes'],
     queryFn: async () => {
       try {
@@ -36,11 +44,23 @@ const ClassManagement = () => {
     },
   });
 
+  const classes = classesResponse?.data || [];
+
+  // 添加调试日志
+  console.log('Classes data:', classes);
+  console.log('Classes IDs:', classes.map(c => c.id));
+
   // Delete class mutation
   const deleteMutation = useMutation({
     mutationFn: async (classId: string) => {
+      if (!classId) {
+        throw new Error('Class ID is required');
+      }
       try {
-        await axios.delete(`/classes/${classId}`);
+        console.log('Deleting class with ID:', classId);
+        const response = await axios.delete(`/classes/${classId}`);
+        console.log('Delete response:', response.data);
+        return response.data;
       } catch (error) {
         console.error('Error deleting class:', error);
         throw error;
@@ -53,6 +73,10 @@ const ClassManagement = () => {
   });
 
   const handleDelete = async (classId: string) => {
+    if (!classId) {
+      console.error('No class ID provided for deletion');
+      return;
+    }
     if (window.confirm('Are you sure you want to delete this class?')) {
       setIsDeleting(true);
       deleteMutation.mutate(classId);
@@ -73,7 +97,7 @@ const ClassManagement = () => {
           </Link>
         </div>
         <div className="flex items-center justify-center h-64">
-          <div className="text-lg text-gray-600">Loading classes...</div>
+          <div className="text-lg text-gray-600">Loading...</div>
         </div>
       </div>
     );
@@ -94,7 +118,7 @@ const ClassManagement = () => {
         </div>
         <div className="flex items-center justify-center h-64">
           <div className="text-lg text-red-600">
-            Error loading classes: {error instanceof Error ? error.message : 'Unknown error'}
+            Failed to load classes: {error instanceof Error ? error.message : 'Unknown error'}
           </div>
         </div>
       </div>
@@ -118,7 +142,7 @@ const ClassManagement = () => {
         {classes && classes.length > 0 ? (
           <ul className="divide-y divide-gray-200">
             {classes.map((classItem) => (
-              <li key={classItem._id}>
+              <li key={classItem.id} className="hover:bg-gray-50">
                 <div className="px-4 py-4 sm:px-6">
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
@@ -130,25 +154,31 @@ const ClassManagement = () => {
                       </p>
                       <div className="mt-2 flex items-center text-sm text-gray-500">
                         <span className="mr-4">
-                          Instructor: {classItem.instructor.username}
+                          Instructor: {classItem.instructor?.username || 'Unassigned'}
                         </span>
                         <span className="mr-4">
-                          Duration: {classItem.duration} minutes
+                          Max Capacity: {classItem.maxCapacity}
+                        </span>
+                        <span className="mr-4">
+                          Level: {classItem.level}
                         </span>
                         <span>
-                          Max Capacity: {classItem.maxCapacity}
+                          Category: {classItem.category}
                         </span>
                       </div>
                     </div>
                     <div className="flex space-x-2">
                       <Link
-                        to={`/admin/classes/${classItem._id}/edit`}
+                        to={`/admin/classes/${classItem.id}/edit`}
                         className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                       >
                         <PencilIcon className="h-5 w-5" aria-hidden="true" />
                       </Link>
                       <button
-                        onClick={() => handleDelete(classItem._id)}
+                        onClick={() => {
+                          console.log('Delete button clicked for class:', classItem.id);
+                          handleDelete(classItem.id);
+                        }}
                         disabled={isDeleting}
                         className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
                       >

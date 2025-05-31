@@ -8,12 +8,20 @@ interface Instructor {
   username: string;
 }
 
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message: string;
+}
+
 interface ClassFormData {
   name: string;
   description: string;
   instructor: string;
   duration: number;
   maxCapacity: number;
+  level: string;
+  category: string;
 }
 
 const ClassForm = () => {
@@ -28,22 +36,28 @@ const ClassForm = () => {
     instructor: '',
     duration: 60,
     maxCapacity: 20,
+    level: 'beginner',
+    category: ''
   });
 
   // Fetch instructors
-  const { data: instructors } = useQuery<Instructor[]>({
+  const { data: instructorsResponse } = useQuery<ApiResponse<Instructor[]>>({
     queryKey: ['instructors'],
     queryFn: async () => {
-      const response = await axios.get('/api/users/instructors');
+      const response = await axios.get('/users/instructors');
+      console.log('Instructors API response:', response.data);
       return response.data;
     },
   });
+
+  const instructors = instructorsResponse?.data || [];
+  console.log('Processed instructors data:', instructors);
 
   // Fetch class data if in edit mode
   const { data: classData } = useQuery({
     queryKey: ['class', id],
     queryFn: async () => {
-      const response = await axios.get(`/api/classes/${id}`);
+      const response = await axios.get(`/classes/${id}`);
       return response.data;
     },
     enabled: isEditMode,
@@ -58,6 +72,8 @@ const ClassForm = () => {
         instructor: classData.instructor._id,
         duration: classData.duration,
         maxCapacity: classData.maxCapacity,
+        level: classData.level,
+        category: classData.category,
       });
     }
   }, [classData]);
@@ -66,9 +82,9 @@ const ClassForm = () => {
   const mutation = useMutation({
     mutationFn: async (data: ClassFormData) => {
       if (isEditMode) {
-        return axios.put(`/api/classes/${id}`, data);
+        return axios.put(`/classes/${id}`, data);
       }
-      return axios.post('/api/classes', data);
+      return axios.post('/classes', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['classes'] });
@@ -141,12 +157,45 @@ const ClassForm = () => {
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           >
             <option value="">Select Instructor</option>
-            {instructors?.map((instructor) => (
+            {Array.isArray(instructors) && instructors.map((instructor) => (
               <option key={instructor._id} value={instructor._id}>
                 {instructor.username}
               </option>
             ))}
           </select>
+        </div>
+
+        <div>
+          <label htmlFor="level" className="block text-sm font-medium text-gray-700">
+            Level
+          </label>
+          <select
+            name="level"
+            id="level"
+            required
+            value={formData.level}
+            onChange={handleChange}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          >
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="category" className="block text-sm font-medium text-gray-700">
+            Category
+          </label>
+          <input
+            type="text"
+            name="category"
+            id="category"
+            required
+            value={formData.category}
+            onChange={handleChange}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          />
         </div>
 
         <div>

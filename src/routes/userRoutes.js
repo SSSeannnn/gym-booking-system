@@ -7,7 +7,8 @@ const {
   deleteUserHandler,
   updateUserRoleHandler,
   getUserStatsHandler,
-  createUserHandler
+  createUserHandler,
+  getInstructorsHandler
 } = require('../controllers/userController');
 const { authenticate } = require('../middlewares/authMiddleware');
 const { authorize } = require('../middlewares/roleMiddleware');
@@ -21,6 +22,9 @@ router.post('/', authorize(['admin']), validateRequest(schemas.createUser), crea
 
 // Get all users
 router.get('/', authorize(['admin']), getAllUsersHandler);
+
+// Get all instructors
+router.get('/instructors', getInstructorsHandler);
 
 // Get user statistics
 router.get('/stats', authorize(['admin']), getUserStatsHandler);

@@ -99,6 +99,16 @@ async function getUserStats() {
   };
 }
 
+/**
+ * 获取所有教练
+ * @returns {Promise<Array>} 教练列表
+ */
+async function getInstructors() {
+  return await User.find({ role: 'instructor' })
+    .select('_id username email')
+    .sort({ username: 1 });
+}
+
 // 创建用户
 async function createUser(userData) {
   try {
@@ -164,5 +174,6 @@ module.exports = {
   updateUser,
   deleteUser,
   updateUserRole,
-  getUserStats
+  getUserStats,
+  getInstructors
 }; 
