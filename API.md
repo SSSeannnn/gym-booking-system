@@ -52,6 +52,24 @@
   }
   ```
 
+### 获取当前用户信息
+- **URL**: `/api/auth/profile`
+- **Method**: `GET`
+- **Description**: 获取当前登录用户的基本信息
+- **Access**: 需要用户认证
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "id": "user_id",
+      "email": "user@example.com",
+      "username": "用户名",
+      "role": "customer"
+    }
+  }
+  ```
+
 ## 2. 会员管理（Membership Management）
 
 ### 获取所有会员计划
@@ -165,7 +183,11 @@
 ### 获取所有课程
 - **URL**: `/api/classes`
 - **Method**: `GET`
-- **Description**: 获取所有课程
+- **Description**: 获取所有课程，可通过 level、category、instructor 筛选
+- **Query Params**:
+  - `level` (可选)
+  - `category` (可选)
+  - `instructor` (可选)
 - **Access**: 公共
 - **Response**:
   ```json
@@ -233,6 +255,25 @@
   }
   ```
 
+### 获取课程排班（某课程下所有排班）
+- **URL**: `/api/classes/:classId/schedules`
+- **Method**: `GET`
+- **Description**: 获取指定课程的所有排班
+- **Access**: 公共
+- **Response**:
+  ```json
+  [
+    {
+      "_id": "schedule_id",
+      "classId": "class_id",
+      "startTime": "2023-12-01T10:00:00.000Z",
+      "endTime": "2023-12-01T11:00:00.000Z",
+      "maxCapacity": 10,
+      "room": "Room 101"
+    }
+  ]
+  ```
+
 ## 4. 排班管理（Schedule Management）
 
 ### 创建排班
@@ -264,7 +305,13 @@
 ### 获取所有排班
 - **URL**: `/api/schedules`
 - **Method**: `GET`
-- **Description**: 获取所有排班
+- **Description**: 获取所有排班，可通过 date、instructor、level、category、classId 筛选
+- **Query Params**:
+  - `date` (可选)
+  - `instructor` (可选)
+  - `level` (可选)
+  - `category` (可选)
+  - `classId` (可选)
 - **Access**: 公共
 - **Response**:
   ```json
@@ -357,20 +404,32 @@
   }
   ```
 
-### 获取用户所有预约
-- **URL**: `/api/bookings/my-bookings`
+### 获取当前用户所有预约
+- **URL**: `/api/bookings/me`
 - **Method**: `GET`
 - **Description**: 获取当前用户的所有预约
-- **Access**: 需要用户认证（仅限customer角色）
+- **Access**: 需要用户认证
 - **Response**:
   ```json
   {
     "success": true,
     "data": [
       {
-        "id": "booking_id",
-        "scheduleId": "schedule_id",
-        "status": "confirmed"
+        "_id": "booking_id",
+        "userId": "user_id",
+        "scheduleId": {
+          "_id": "schedule_id",
+          "classId": {
+            "_id": "class_id",
+            "name": "Yoga",
+            "instructor": { "_id": "instructor_id", "username": "rr345" }
+          },
+          "startTime": "2025-06-01T18:22:00.000Z",
+          "endTime": "2025-06-01T21:23:00.000Z",
+          "room": "201"
+        },
+        "status": "confirmed",
+        "createdAt": "2025-06-01T14:42:53.275Z"
       }
     ]
   }

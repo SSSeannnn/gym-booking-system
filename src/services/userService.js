@@ -146,15 +146,11 @@ async function createUser(userData) {
       };
     }
 
-    // 生成密码盐和哈希
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(userData.password, salt);
-
     // 创建用户对象
     const user = new User({
       username: userData.username,
       email: userData.email,
-      password: hashedPassword,
+      password: userData.password, // 直接使用原始密码，让save中间件处理哈希
       role: userData.role,
       membership: membership
     });

@@ -21,4 +21,10 @@ router.post('/me/membership/cancel', authenticate, cancelMembershipHandler);
 // 续订会员（需要登录）
 router.post('/me/membership/renew', authenticate, renewMembershipHandler);
 
+// 兼容前端API，添加 /me/cancel 路由
+router.post('/me/cancel', authenticate, cancelMembershipHandler);
+
+// 兼容前端API，添加 /me/renew 路由
+router.post('/me/renew', authenticate, renewMembershipHandler);
+
 module.exports = router; 

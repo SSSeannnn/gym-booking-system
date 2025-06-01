@@ -57,8 +57,9 @@ export default function Schedule() {
 
   const handleConfirmBooking = () => {
     if (selectedSchedule) {
-      console.log('Booking scheduleId:', selectedSchedule._id);
-      bookingMutation.mutate(selectedSchedule._id);
+      const scheduleId = selectedSchedule._id || selectedSchedule.id;
+      console.log('Booking scheduleId:', scheduleId);
+      bookingMutation.mutate(scheduleId);
     }
   };
 

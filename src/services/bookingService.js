@@ -55,15 +55,31 @@ async function createBooking(bookingData) {
  * @returns {Promise<Array>} 预约列表
  */
 async function getUserBookings(userId) {
-  return await Booking.find({ userId })
+  const bookings = await Booking.find({ userId })
     .populate({
       path: 'scheduleId',
       populate: {
         path: 'classId',
+        populate: {
+          path: 'instructor',
+          select: 'username name'
+        },
         select: 'name description durationMinutes instructor'
       }
     })
     .sort({ createdAt: -1 });
+  // 转换格式，兼容前端MyBookings.tsx的booking.schedule
+  return bookings.map(b => {
+    const schedule = b.scheduleId ? {
+      ...b.scheduleId.toObject(),
+      className: b.scheduleId.classId?.name || '',
+      instructor: b.scheduleId.classId?.instructor || '',
+    } : undefined;
+    return {
+      ...b.toObject(),
+      schedule
+    };
+  });
 }
 
 /**
@@ -125,6 +141,10 @@ async function getBookingById(bookingId) {
       path: 'scheduleId',
       populate: {
         path: 'classId',
+        populate: {
+          path: 'instructor',
+          select: 'username name'
+        },
         select: 'name description durationMinutes instructor'
       }
     })

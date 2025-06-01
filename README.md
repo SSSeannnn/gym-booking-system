@@ -485,4 +485,36 @@
       }
     ]
   }
-  ``` 
+  ```
+
+## 前端API调用说明
+
+### 认证与Token
+- 登录/注册成功后，前端需将返回的token存入localStorage。
+- 后续所有需要认证的API请求，需在header中携带：
+  `Authorization: Bearer <token>`
+
+### 用户信息
+- **GET** `/api/auth/profile` 获取当前登录用户信息。
+
+### 课程相关
+- **GET** `/api/classes` 支持 level、category、instructor 查询参数筛选。
+- **GET** `/api/classes/:classId/schedules` 获取某课程下所有排班。
+
+### 排班相关
+- **GET** `/api/schedules` 支持 date、instructor、level、category、classId 查询参数筛选。
+
+### 预约相关
+- **GET** `/api/bookings/me` 获取当前用户所有预约。
+- **POST** `/api/bookings` 创建预约。
+- **DELETE** `/api/bookings/:bookingId` 取消预约。
+
+### 会员相关
+- **GET** `/api/memberships/plans` 获取会员计划。
+- **GET** `/api/memberships/me/membership` 获取当前会员状态。
+- **POST** `/api/memberships/me/cancel` 取消会员。
+- **POST** `/api/memberships/me/renew` 续订会员。
+
+### 错误处理
+- 401 未认证时，前端会自动跳转到登录页。
+- 其他错误会在页面以提示信息显示。 
