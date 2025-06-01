@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getSchedules, createBooking } from '../services/api';
 import type { ScheduleFilters } from '../types/class';
 import { format } from 'date-fns';
+import { useSearchParams } from 'react-router-dom';
 
 const levelColors = {
   beginner: 'bg-green-100 text-green-800',
@@ -17,6 +18,7 @@ export default function Schedule() {
   const [selectedSchedule, setSelectedSchedule] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const queryClient = useQueryClient();
+  const [searchParams] = useSearchParams();
 
   const { data: schedules, isLoading, error: fetchError } = useQuery({
     queryKey: ['schedules', filters],
@@ -55,9 +57,18 @@ export default function Schedule() {
 
   const handleConfirmBooking = () => {
     if (selectedSchedule) {
+      console.log('Booking scheduleId:', selectedSchedule._id);
       bookingMutation.mutate(selectedSchedule._id);
     }
   };
+
+  // 自动根据URL参数classId筛选
+  useEffect(() => {
+    const classId = searchParams.get('classId');
+    if (classId) {
+      setFilters((prev) => ({ ...prev, classId }));
+    }
+  }, [searchParams]);
 
   if (isLoading) {
     return (
@@ -76,7 +87,7 @@ export default function Schedule() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 bg-white">
       <h1 className="text-3xl font-bold mb-8">Class Schedule</h1>
       
       {/* Filters */}
@@ -159,7 +170,9 @@ export default function Schedule() {
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                  Instructor: {schedule.instructor}
+                  Instructor: {typeof schedule.instructor === 'object' && schedule.instructor !== null
+                    ? (schedule.instructor as { username?: string; name?: string }).username || (schedule.instructor as { username?: string; name?: string }).name || '未分配'
+                    : schedule.instructor || '未分配'}
                 </p>
                 <p className="flex items-center">
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -204,7 +217,9 @@ export default function Schedule() {
               <p><span className="font-medium">Class:</span> {selectedSchedule.className}</p>
               <p><span className="font-medium">Date:</span> {format(new Date(selectedSchedule.date), 'MMMM dd, yyyy')}</p>
               <p><span className="font-medium">Time:</span> {format(new Date(selectedSchedule.startTime), 'HH:mm')} - {format(new Date(selectedSchedule.endTime), 'HH:mm')}</p>
-              <p><span className="font-medium">Instructor:</span> {selectedSchedule.instructor}</p>
+              <p><span className="font-medium">Instructor:</span> {typeof selectedSchedule.instructor === 'object' && selectedSchedule.instructor !== null
+                ? (selectedSchedule.instructor as { username?: string; name?: string }).username || (selectedSchedule.instructor as { username?: string; name?: string }).name || '未分配'
+                : selectedSchedule.instructor || '未分配'}</p>
               <p><span className="font-medium">Location:</span> {selectedSchedule.location}</p>
             </div>
             {error && (

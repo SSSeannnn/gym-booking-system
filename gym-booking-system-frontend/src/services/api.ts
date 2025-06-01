@@ -119,7 +119,7 @@ export const getSchedules = async (filters?: ScheduleFilters): Promise<Schedule[
   if (filters?.instructor) params.append('instructor', filters.instructor);
   if (filters?.level) params.append('level', filters.level);
   if (filters?.category) params.append('category', filters.category);
-  
+  if (filters?.classId) params.append('classId', filters.classId);
   const response = await api.get(`/schedules?${params.toString()}`);
   return response.data.data;
 };

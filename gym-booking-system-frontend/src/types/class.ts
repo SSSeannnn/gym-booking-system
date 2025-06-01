@@ -40,7 +40,7 @@ export interface Schedule {
   location: string;
   isBooked: boolean;
   level: 'beginner' | 'intermediate' | 'advanced';
-  category: 'yoga' | 'fitness' | 'dance';
+  category: 'yoga' | 'HIIT' | 'Boxing';
 }
 
 export interface ScheduleFilters {
@@ -48,6 +48,7 @@ export interface ScheduleFilters {
   instructor?: string;
   level?: string;
   category?: string;
+  classId?: string;
 }
 
 export interface Booking {

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getClasses } from '../services/api';
 import type { Class, ClassFilters } from '../types/class';
+import { useNavigate } from 'react-router-dom';
 
 const levelColors = {
   beginner: 'bg-green-100 text-green-800',
@@ -11,6 +12,7 @@ const levelColors = {
 
 const Classes = () => {
   const [filters, setFilters] = useState<ClassFilters>({});
+  const navigate = useNavigate();
 
   const { data: classes, isLoading, error } = useQuery({
     queryKey: ['classes', filters],
@@ -46,7 +48,7 @@ const Classes = () => {
       {/* 过滤器 */}
       <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
         <select
-          className="rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+          className="rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 bg-white"
           onChange={(e) => handleFilterChange('level', e.target.value)}
           value={filters.level || ''}
         >
@@ -57,7 +59,7 @@ const Classes = () => {
         </select>
 
         <select
-          className="rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+          className="rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 bg-white"
           onChange={(e) => handleFilterChange('category', e.target.value)}
           value={filters.category || ''}
         >
@@ -71,7 +73,7 @@ const Classes = () => {
         <input
           type="text"
           placeholder="Search by instructor..."
-          className="rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+          className="rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 bg-white"
           onChange={(e) => handleFilterChange('instructor', e.target.value)}
           value={filters.instructor || ''}
         />
@@ -116,15 +118,17 @@ const Classes = () => {
                   <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                  Instructor: {classItem.instructor}
+                  Instructor: {typeof classItem.instructor === 'object' && classItem.instructor !== null
+                    ? (classItem.instructor as { username?: string }).username || 'unassigned'
+                    : classItem.instructor || 'Unassigned'}
                 </div>
               </div>
               <div className="mt-6">
                 <button
-                  className="w-full bg-primary-600 text-white py-2 px-4 rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-200"
-                  onClick={() => {/* TODO: 实现预约功能 */}}
+                  className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200"
+                  onClick={() => navigate(`/schedule?classId=${classItem.id}`)}
                 >
-                  Book Now
+                  View Schedule
                 </button>
               </div>
             </div>
