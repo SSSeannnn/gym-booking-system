@@ -20,6 +20,7 @@ import ScheduleManagement from './pages/admin/ScheduleManagement';
 import ScheduleForm from './pages/admin/ScheduleForm';
 import UserManagement from './pages/admin/UserManagement';
 import UserForm from './pages/admin/UserForm';
+import InstructorSchedulesPage from './pages/InstructorSchedulesPage';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -56,6 +57,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Membership />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="instructor/schedules"
+              element={
+                <ProtectedRoute>
+                  <InstructorSchedulesPage />
                 </ProtectedRoute>
               }
             />

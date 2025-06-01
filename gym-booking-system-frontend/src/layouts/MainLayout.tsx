@@ -24,13 +24,20 @@ export default function MainLayout() {
     { name: 'Schedule', href: '/schedule' },
   ];
 
-  const privateLinks = [
-  { name: 'Home', href: '/' },
-  { name: 'Classes', href: '/classes' },
-  { name: 'Schedule', href: '/schedule' },
-  { name: 'My Bookings', href: '/my-bookings' },
-  { name: 'Membership', href: '/membership' },
-];
+  let privateLinks = [
+    { name: 'Home', href: '/' },
+    { name: 'Classes', href: '/classes' },
+    { name: 'Schedule', href: '/schedule' },
+  ];
+
+  if (isAuthenticated) {
+    if (user?.role === 'instructor') {
+      privateLinks.push({ name: 'My Schedules', href: '/instructor/schedules' });
+    } else {
+      privateLinks.push({ name: 'My Bookings', href: '/my-bookings' });
+      privateLinks.push({ name: 'Membership', href: '/membership' });
+    }
+  }
 
   const adminLinks = [
     ...privateLinks,
