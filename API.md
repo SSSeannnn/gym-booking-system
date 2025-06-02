@@ -1,12 +1,12 @@
-# API 文档
+# API File
 
-## 1. 用户认证（User Authentication）
+## 1. User Authentication
 
-### 用户注册
+### register
 - **URL**: `/api/auth/register`
 - **Method**: `POST`
-- **Description**: 用户注册，可指定角色，自动初始化会员信息
-- **Access**: 公共
+- **Description**: User registration, can specify role, automatically initialize membership information
+- **Access**: public
 - **Request Body**:
   ```json
   {
@@ -19,7 +19,7 @@
   ```json
   {
     "success": true,
-    "message": "注册成功",
+    "message": "Registration successful",
     "data": {
       "user": {
         "id": "user_id",
@@ -30,11 +30,11 @@
   }
   ```
 
-### 用户登录
+### User Login
 - **URL**: `/api/auth/login`
 - **Method**: `POST`
-- **Description**: 用户登录，返回JWT
-- **Access**: 公共
+- **Description**: User login, returns JWT
+- **Access**: public
 - **Request Body**:
   ```json
   {
@@ -52,11 +52,11 @@
   }
   ```
 
-### 获取当前用户信息
+### Get Current User Info
 - **URL**: `/api/auth/profile`
 - **Method**: `GET`
-- **Description**: 获取当前登录用户的基本信息
-- **Access**: 需要用户认证
+- **Description**: Get basic information of the currently logged-in user
+- **Access**: Requires user authentication
 - **Response**:
   ```json
   {
@@ -64,19 +64,19 @@
     "data": {
       "id": "user_id",
       "email": "user@example.com",
-      "username": "用户名",
+      "username": "username",
       "role": "customer"
     }
   }
   ```
 
-## 2. 会员管理（Membership Management）
+## 2. Membership Management
 
-### 获取所有会员计划
+### Get All Membership Plans
 - **URL**: `/api/memberships/plans`
 - **Method**: `GET`
-- **Description**: 获取所有可用的会员计划
-- **Access**: 公共
+- **Description**: Get all available membership plans
+- **Access**: public
 - **Response**:
   ```json
   {
@@ -84,7 +84,7 @@
     "data": [
       {
         "id": "plan_id",
-        "name": "月度会员",
+        "name": "Monthly Membership",
         "price": 99,
         "durationDays": 30
       }
@@ -92,11 +92,11 @@
   }
   ```
 
-### 获取当前用户会员状态
+### Get Current User Membership Status
 - **URL**: `/api/memberships/me/membership`
 - **Method**: `GET`
-- **Description**: 获取当前登录用户的会员状态
-- **Access**: 需要用户认证
+- **Description**: Get the membership status of the currently logged-in user
+- **Access**: Requires user authentication
 - **Response**:
   ```json
   {
@@ -109,16 +109,16 @@
   }
   ```
 
-### 取消会员订阅
+### Cancel Membership Subscription
 - **URL**: `/api/memberships/me/membership/cancel`
 - **Method**: `POST`
-- **Description**: 取消当前用户的会员订阅
-- **Access**: 需要用户认证
+- **Description**: Cancel the current user's membership subscription
+- **Access**: Requires user authentication
 - **Response**:
   ```json
   {
     "success": true,
-    "message": "会员订阅已取消",
+    "message": "Membership subscription cancelled",
     "data": {
       "membership": {
         "status": "cancelled",
@@ -128,11 +128,11 @@
   }
   ```
 
-### 续订会员
+### Renew Membership
 - **URL**: `/api/memberships/me/membership/renew`
 - **Method**: `POST`
-- **Description**: 续订会员（需传递planId）
-- **Access**: 需要用户认证
+- **Description**: Renew membership (requires planId)
+- **Access**: Requires user authentication
 - **Request Body**:
   ```json
   {
@@ -143,7 +143,7 @@
   ```json
   {
     "success": true,
-    "message": "会员续订成功",
+    "message": "Membership renewed successfully",
     "data": {
       "membership": {
         "status": "active",
@@ -153,18 +153,18 @@
   }
   ```
 
-## 3. 课程管理（Class Management）
+## 3. Class Management
 
-### 创建课程
+### Create Class
 - **URL**: `/api/classes`
 - **Method**: `POST`
-- **Description**: 创建课程
-- **Access**: 仅限管理员
+- **Description**: Create class
+- **Access**: Admin only
 - **Request Body**:
   ```json
   {
-    "name": "瑜伽课",
-    "description": "初级瑜伽课程",
+    "name": "Yoga Class",
+    "description": "Beginner yoga class",
     "durationMinutes": 60,
     "instructor": "instructor_id"
   }
@@ -175,20 +175,20 @@
     "success": true,
     "data": {
       "id": "class_id",
-      "name": "瑜伽课"
+      "name": "Yoga Class"
     }
   }
   ```
 
-### 获取所有课程
+### Get All Classes
 - **URL**: `/api/classes`
 - **Method**: `GET`
-- **Description**: 获取所有课程，可通过 level、category、instructor 筛选
+- **Description**: Get all classes, can be filtered by level, category, instructor
 - **Query Params**:
-  - `level` (可选)
-  - `category` (可选)
-  - `instructor` (可选)
-- **Access**: 公共
+  - `level` (optional)
+  - `category` (optional)
+  - `instructor` (optional)
+- **Access**: public
 - **Response**:
   ```json
   {
@@ -196,39 +196,39 @@
     "data": [
       {
         "id": "class_id",
-        "name": "瑜伽课"
+        "name": "Yoga Class"
       }
     ]
   }
   ```
 
-### 获取课程详情
+### Get Class Detail
 - **URL**: `/api/classes/:id`
 - **Method**: `GET`
-- **Description**: 获取指定课程详情
-- **Access**: 公共
+- **Description**: Get details of the specified class
+- **Access**: public
 - **Response**:
   ```json
   {
     "success": true,
     "data": {
       "id": "class_id",
-      "name": "瑜伽课",
-      "description": "初级瑜伽课程"
+      "name": "Yoga Class",
+      "description": "Beginner yoga class"
     }
   }
   ```
 
-### 更新课程
+### Update Class
 - **URL**: `/api/classes/:id`
 - **Method**: `PUT`
-- **Description**: 更新课程信息
-- **Access**: 仅限管理员
+- **Description**: Update class information
+- **Access**: Admin only
 - **Request Body**:
   ```json
   {
-    "name": "高级瑜伽课",
-    "description": "高级瑜伽课程"
+    "name": "Advanced Yoga Class",
+    "description": "Advanced yoga class"
   }
   ```
 - **Response**:
@@ -237,29 +237,29 @@
     "success": true,
     "data": {
       "id": "class_id",
-      "name": "高级瑜伽课"
+      "name": "Advanced Yoga Class"
     }
   }
   ```
 
-### 删除课程
+### Delete Class
 - **URL**: `/api/classes/:id`
 - **Method**: `DELETE`
-- **Description**: 删除课程
-- **Access**: 仅限管理员
+- **Description**: Delete class
+- **Access**: Admin only
 - **Response**:
   ```json
   {
     "success": true,
-    "message": "课程已删除"
+    "message": "Class deleted"
   }
   ```
 
-### 获取课程排班（某课程下所有排班）
+### Get Class Schedules (All schedules under a class)
 - **URL**: `/api/classes/:classId/schedules`
 - **Method**: `GET`
-- **Description**: 获取指定课程的所有排班
-- **Access**: 公共
+- **Description**: Get all schedules for the specified class
+- **Access**: public
 - **Response**:
   ```json
   [
@@ -274,13 +274,13 @@
   ]
   ```
 
-## 4. 排班管理（Schedule Management）
+## 4. Schedule Management
 
-### 创建排班
+### Create Schedule
 - **URL**: `/api/schedules`
 - **Method**: `POST`
-- **Description**: 创建课程排班
-- **Access**: 仅限管理员
+- **Description**: Create class schedule
+- **Access**: Admin only
 - **Request Body**:
   ```json
   {
@@ -302,17 +302,17 @@
   }
   ```
 
-### 获取所有排班
+### Get All Schedules
 - **URL**: `/api/schedules`
 - **Method**: `GET`
-- **Description**: 获取所有排班，可通过 date、instructor、level、category、classId 筛选
+- **Description**: Get all schedules, can be filtered by date, instructor, level, category, classId
 - **Query Params**:
-  - `date` (可选)
-  - `instructor` (可选)
-  - `level` (可选)
-  - `category` (可选)
-  - `classId` (可选)
-- **Access**: 公共
+  - `date` (optional)
+  - `instructor` (optional)
+  - `level` (optional)
+  - `category` (optional)
+  - `classId` (optional)
+- **Access**: public
 - **Response**:
   ```json
   {
@@ -326,11 +326,11 @@
   }
   ```
 
-### 获取排班详情
+### Get Schedule Detail
 - **URL**: `/api/schedules/:id`
 - **Method**: `GET`
-- **Description**: 获取指定排班详情
-- **Access**: 公共
+- **Description**: Get details of the specified schedule
+- **Access**: public
 - **Response**:
   ```json
   {
@@ -343,11 +343,11 @@
   }
   ```
 
-### 更新排班
+### Update Schedule
 - **URL**: `/api/schedules/:id`
 - **Method**: `PUT`
-- **Description**: 更新排班信息
-- **Access**: 仅限管理员
+- **Description**: Update schedule information
+- **Access**: Admin only
 - **Request Body**:
   ```json
   {
@@ -366,26 +366,26 @@
   }
   ```
 
-### 删除排班
+### Delete Schedule
 - **URL**: `/api/schedules/:id`
 - **Method**: `DELETE`
-- **Description**: 删除排班
-- **Access**: 仅限管理员
+- **Description**: Delete schedule
+- **Access**: Admin only
 - **Response**:
   ```json
   {
     "success": true,
-    "message": "排班已删除"
+    "message": "Schedule deleted"
   }
   ```
 
-## 5. 预约管理（Booking Management）
+## 5. Booking Management
 
-### 创建预约
+### Create Booking
 - **URL**: `/api/bookings`
 - **Method**: `POST`
-- **Description**: 用户预订课程排班
-- **Access**: 需要用户认证（仅限customer角色）
+- **Description**: User books a class schedule
+- **Access**: Requires user authentication (customer role only)
 - **Request Body**:
   ```json
   {
@@ -396,7 +396,7 @@
   ```json
   {
     "success": true,
-    "message": "预约创建成功",
+    "message": "Booking created successfully",
     "data": {
       "id": "booking_id",
       "status": "confirmed"
@@ -404,11 +404,11 @@
   }
   ```
 
-### 获取当前用户所有预约
+### Get All Bookings for Current User
 - **URL**: `/api/bookings/me`
 - **Method**: `GET`
-- **Description**: 获取当前用户的所有预约
-- **Access**: 需要用户认证
+- **Description**: Get all bookings for the current user
+- **Access**: Requires user authentication
 - **Response**:
   ```json
   {
@@ -435,11 +435,11 @@
   }
   ```
 
-### 获取排班所有预约
+### Get All Bookings for a Schedule
 - **URL**: `/api/bookings/schedule/:scheduleId`
 - **Method**: `GET`
-- **Description**: 获取某个排班下的所有预约
-- **Access**: 仅限管理员
+- **Description**: Get all bookings under a schedule
+- **Access**: Admin only
 - **Response**:
   ```json
   {
@@ -454,11 +454,11 @@
   }
   ```
 
-### 获取预约详情
+### Get Booking Detail
 - **URL**: `/api/bookings/:id`
 - **Method**: `GET`
-- **Description**: 获取预约详情
-- **Access**: 需要用户认证
+- **Description**: Get booking details
+- **Access**: Requires user authentication
 - **Response**:
   ```json
   {
@@ -471,16 +471,16 @@
   }
   ```
 
-### 取消预约
+### Cancel Booking
 - **URL**: `/api/bookings/:bookingId`
 - **Method**: `DELETE`
-- **Description**: 用户取消自己的预约
-- **Access**: 需要用户认证（仅限预约本人）
+- **Description**: User cancels their booking
+- **Access**: Requires user authentication (only for the booking owner)
 - **Response**:
   ```json
   {
     "success": true,
-    "message": "预约已成功取消",
+    "message": "Booking cancelled successfully",
     "data": {
       "id": "booking_id",
       "status": "cancelled"
@@ -488,23 +488,23 @@
   }
   ```
 
-## 主要数据模型依赖
+## Main Data Model Dependencies
 
-- **User**: 用户信息、角色、会员信息
-- **MembershipPlan**: 会员计划
-- **Class**: 课程信息
-- **Schedule**: 课程排班（与Class、Instructor关联）
-- **Booking**: 预约信息（与User、Schedule关联）
+- **User**: User information, role, membership information
+- **MembershipPlan**: Membership plan
+- **Class**: Class information
+- **Schedule**: Class schedule (associated with Class and Instructor)
+- **Booking**: Booking information (associated with User and Schedule)
 
-## 权限说明
+## Permission Description
 
-- **公共**: 无需登录即可访问
-- **需要用户认证**: 需携带有效JWT
-- **仅限管理员**: 需登录且角色为admin
-- **仅限预约本人**: 需登录且只能操作自己的预约
+- **Public**: Accessible without login
+- **Requires User Authentication**: Must carry a valid JWT
+- **Admin Only**: Must login and be role admin
+- **Only for Booking Owner**: Must login and can only operate on their own booking
 
-## 备注
+## Notes
 
-- 所有核心业务均有Jest自动化测试覆盖，确保接口的正确性和健壮性。
-- 会员、课程、排班、预约等模块均已实现基本的CRUD和业务规则校验。
-- 预约取消、权限校验、并发名额控制等关键场景已通过测试。 
+- All core business has Jest automated test coverage to ensure interface correctness and robustness.
+- Membership, class, schedule, booking modules have implemented basic CRUD and business rule checks.
+- Key scenarios such as booking cancellation, permission checks, concurrent seat control have been tested. 

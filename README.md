@@ -487,34 +487,34 @@
   }
   ```
 
-## 前端API调用说明
+## Frontend API Usage Instructions
 
-### 认证与Token
-- 登录/注册成功后，前端需将返回的token存入localStorage。
-- 后续所有需要认证的API请求，需在header中携带：
+### Authentication and Token
+- After successful login/registration, the frontend should store the returned token in localStorage.
+- For all subsequent API requests that require authentication, include the following in the header:
   `Authorization: Bearer <token>`
 
-### 用户信息
-- **GET** `/api/auth/profile` 获取当前登录用户信息。
+### User Information
+- **GET** `/api/auth/profile` Get information of the currently logged-in user.
 
-### 课程相关
-- **GET** `/api/classes` 支持 level、category、instructor 查询参数筛选。
-- **GET** `/api/classes/:classId/schedules` 获取某课程下所有排班。
+### Class Related
+- **GET** `/api/classes` Supports filtering by level, category, and instructor query parameters.
+- **GET** `/api/classes/:classId/schedules` Get all schedules under a specific class.
 
-### 排班相关
-- **GET** `/api/schedules` 支持 date、instructor、level、category、classId 查询参数筛选。
+### Schedule Related
+- **GET** `/api/schedules` Supports filtering by date, instructor, level, category, and classId query parameters.
 
-### 预约相关
-- **GET** `/api/bookings/me` 获取当前用户所有预约。
-- **POST** `/api/bookings` 创建预约。
-- **DELETE** `/api/bookings/:bookingId` 取消预约。
+### Booking Related
+- **GET** `/api/bookings/me` Get all bookings for the current user.
+- **POST** `/api/bookings` Create a booking.
+- **DELETE** `/api/bookings/:bookingId` Cancel a booking.
 
-### 会员相关
-- **GET** `/api/memberships/plans` 获取会员计划。
-- **GET** `/api/memberships/me/membership` 获取当前会员状态。
-- **POST** `/api/memberships/me/cancel` 取消会员。
-- **POST** `/api/memberships/me/renew` 续订会员。
+### Membership Related
+- **GET** `/api/memberships/plans` Get membership plans.
+- **GET** `/api/memberships/me/membership` Get current membership status.
+- **POST** `/api/memberships/me/cancel` Cancel membership.
+- **POST** `/api/memberships/me/renew` Renew membership.
 
-### 错误处理
-- 401 未认证时，前端会自动跳转到登录页。
-- 其他错误会在页面以提示信息显示。 
+### Error Handling
+- 401 Unauthorized: The frontend will automatically redirect to the login page.
+- Other errors will be displayed as prompt messages on the page. 
