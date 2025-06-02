@@ -109,76 +109,7 @@
   }
   ```
 
-### Cancel Membership Subscription
-- **URL**: `/api/memberships/me/membership/cancel`
-- **Method**: `POST`
-- **Description**: Cancel the current user's membership subscription
-- **Access**: Requires user authentication
-- **Response**:
-  ```json
-  {
-    "success": true,
-    "message": "Membership subscription cancelled",
-    "data": {
-      "membership": {
-        "status": "cancelled",
-        "endDate": "2023-12-31T00:00:00.000Z"
-      }
-    }
-  }
-  ```
-
-### Renew Membership
-- **URL**: `/api/memberships/me/membership/renew`
-- **Method**: `POST`
-- **Description**: Renew membership (requires planId)
-- **Access**: Requires user authentication
-- **Request Body**:
-  ```json
-  {
-    "planId": "plan_id"
-  }
-  ```
-- **Response**:
-  ```json
-  {
-    "success": true,
-    "message": "Membership renewed successfully",
-    "data": {
-      "membership": {
-        "status": "active",
-        "endDate": "2024-01-31T00:00:00.000Z"
-      }
-    }
-  }
-  ```
-
 ## 3. Class Management
-
-### Create Class
-- **URL**: `/api/classes`
-- **Method**: `POST`
-- **Description**: Create class
-- **Access**: Admin only
-- **Request Body**:
-  ```json
-  {
-    "name": "Yoga Class",
-    "description": "Beginner yoga class",
-    "durationMinutes": 60,
-    "instructor": "instructor_id"
-  }
-  ```
-- **Response**:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "id": "class_id",
-      "name": "Yoga Class"
-    }
-  }
-  ```
 
 ### Get All Classes
 - **URL**: `/api/classes`
@@ -219,42 +150,6 @@
   }
   ```
 
-### Update Class
-- **URL**: `/api/classes/:id`
-- **Method**: `PUT`
-- **Description**: Update class information
-- **Access**: Admin only
-- **Request Body**:
-  ```json
-  {
-    "name": "Advanced Yoga Class",
-    "description": "Advanced yoga class"
-  }
-  ```
-- **Response**:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "id": "class_id",
-      "name": "Advanced Yoga Class"
-    }
-  }
-  ```
-
-### Delete Class
-- **URL**: `/api/classes/:id`
-- **Method**: `DELETE`
-- **Description**: Delete class
-- **Access**: Admin only
-- **Response**:
-  ```json
-  {
-    "success": true,
-    "message": "Class deleted"
-  }
-  ```
-
 ### Get Class Schedules (All schedules under a class)
 - **URL**: `/api/classes/:classId/schedules`
 - **Method**: `GET`
@@ -275,32 +170,6 @@
   ```
 
 ## 4. Schedule Management
-
-### Create Schedule
-- **URL**: `/api/schedules`
-- **Method**: `POST`
-- **Description**: Create class schedule
-- **Access**: Admin only
-- **Request Body**:
-  ```json
-  {
-    "classId": "class_id",
-    "startTime": "2023-12-01T10:00:00.000Z",
-    "endTime": "2023-12-01T11:00:00.000Z",
-    "maxCapacity": 10,
-    "room": "Room 101"
-  }
-  ```
-- **Response**:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "id": "schedule_id",
-      "classId": "class_id"
-    }
-  }
-  ```
 
 ### Get All Schedules
 - **URL**: `/api/schedules`
@@ -323,59 +192,6 @@
         "classId": "class_id"
       }
     ]
-  }
-  ```
-
-### Get Schedule Detail
-- **URL**: `/api/schedules/:id`
-- **Method**: `GET`
-- **Description**: Get details of the specified schedule
-- **Access**: public
-- **Response**:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "id": "schedule_id",
-      "classId": "class_id",
-      "startTime": "2023-12-01T10:00:00.000Z"
-    }
-  }
-  ```
-
-### Update Schedule
-- **URL**: `/api/schedules/:id`
-- **Method**: `PUT`
-- **Description**: Update schedule information
-- **Access**: Admin only
-- **Request Body**:
-  ```json
-  {
-    "startTime": "2023-12-01T11:00:00.000Z",
-    "endTime": "2023-12-01T12:00:00.000Z"
-  }
-  ```
-- **Response**:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "id": "schedule_id",
-      "startTime": "2023-12-01T11:00:00.000Z"
-    }
-  }
-  ```
-
-### Delete Schedule
-- **URL**: `/api/schedules/:id`
-- **Method**: `DELETE`
-- **Description**: Delete schedule
-- **Access**: Admin only
-- **Response**:
-  ```json
-  {
-    "success": true,
-    "message": "Schedule deleted"
   }
   ```
 
@@ -432,59 +248,6 @@
         "createdAt": "2025-06-01T14:42:53.275Z"
       }
     ]
-  }
-  ```
-
-### Get All Bookings for a Schedule
-- **URL**: `/api/bookings/schedule/:scheduleId`
-- **Method**: `GET`
-- **Description**: Get all bookings under a schedule
-- **Access**: Admin only
-- **Response**:
-  ```json
-  {
-    "success": true,
-    "data": [
-      {
-        "id": "booking_id",
-        "userId": "user_id",
-        "status": "confirmed"
-      }
-    ]
-  }
-  ```
-
-### Get Booking Detail
-- **URL**: `/api/bookings/:id`
-- **Method**: `GET`
-- **Description**: Get booking details
-- **Access**: Requires user authentication
-- **Response**:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "id": "booking_id",
-      "scheduleId": "schedule_id",
-      "status": "confirmed"
-    }
-  }
-  ```
-
-### Cancel Booking
-- **URL**: `/api/bookings/:bookingId`
-- **Method**: `DELETE`
-- **Description**: User cancels their booking
-- **Access**: Requires user authentication (only for the booking owner)
-- **Response**:
-  ```json
-  {
-    "success": true,
-    "message": "Booking cancelled successfully",
-    "data": {
-      "id": "booking_id",
-      "status": "cancelled"
-    }
   }
   ```
 

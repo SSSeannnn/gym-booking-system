@@ -56,6 +56,23 @@
   }
   ```
 
+### Get Current User Info
+- **URL:** `/api/auth/profile`
+- **Method:** `GET`
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "data": {
+      "_id": "user_id",
+      "email": "user@example.com",
+      "role": "customer",
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2023-01-01T00:00:00.000Z"
+    }
+  }
+  ```
+
 ## Classes
 
 ### Get All Classes
@@ -96,72 +113,21 @@
   }
   ```
 
-### Create Class (Instructor Only)
-- **URL:** `/api/classes`
-- **Method:** `POST`
-- **Headers:** `Authorization: Bearer jwt_token`
-- **Body:**
-  ```json
-  {
-    "name": "Yoga",
-    "description": "A relaxing yoga class",
-    "durationMinutes": 60
-  }
-  ```
+### Get Class Schedules
+- **URL:** `/api/classes/:classId/schedules`
+- **Method:** `GET`
 - **Response:**
   ```json
-  {
-    "success": true,
-    "message": "Class created successfully",
-    "data": {
-      "_id": "class_id",
-      "name": "Yoga",
-      "description": "A relaxing yoga class",
-      "durationMinutes": 60,
-      "createdAt": "2023-01-01T00:00:00.000Z",
-      "updatedAt": "2023-01-01T00:00:00.000Z"
+  [
+    {
+      "_id": "schedule_id",
+      "classId": "class_id",
+      "startTime": "2023-12-01T10:00:00.000Z",
+      "endTime": "2023-12-01T11:00:00.000Z",
+      "maxCapacity": 10,
+      "room": "Room 101"
     }
-  }
-  ```
-
-### Update Class (Instructor Only)
-- **URL:** `/api/classes/:id`
-- **Method:** `PUT`
-- **Headers:** `Authorization: Bearer jwt_token`
-- **Body:**
-  ```json
-  {
-    "name": "Advanced Yoga",
-    "description": "An advanced yoga class",
-    "durationMinutes": 90
-  }
-  ```
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "message": "Class updated successfully",
-    "data": {
-      "_id": "class_id",
-      "name": "Advanced Yoga",
-      "description": "An advanced yoga class",
-      "durationMinutes": 90,
-      "createdAt": "2023-01-01T00:00:00.000Z",
-      "updatedAt": "2023-01-01T00:00:00.000Z"
-    }
-  }
-  ```
-
-### Delete Class (Instructor Only)
-- **URL:** `/api/classes/:id`
-- **Method:** `DELETE`
-- **Headers:** `Authorization: Bearer jwt_token`
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "message": "Class deleted successfully"
-  }
+  ]
   ```
 
 ## Schedules
@@ -169,7 +135,6 @@
 ### Get All Schedules
 - **URL:** `/api/schedules`
 - **Method:** `GET`
-- **Headers:** `Authorization: Bearer jwt_token`
 - **Response:**
   ```json
   {
@@ -189,146 +154,11 @@
   }
   ```
 
-### Get Schedule by ID
-- **URL:** `/api/schedules/:id`
-- **Method:** `GET`
-- **Headers:** `Authorization: Bearer jwt_token`
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "data": {
-      "_id": "schedule_id",
-      "classId": "class_id",
-      "startTime": "2023-01-01T10:00:00.000Z",
-      "endTime": "2023-01-01T11:00:00.000Z",
-      "maxCapacity": 20,
-      "currentBookings": 0,
-      "createdAt": "2023-01-01T00:00:00.000Z",
-      "updatedAt": "2023-01-01T00:00:00.000Z"
-    }
-  }
-  ```
-
-### Create Schedule (Admin Only)
-- **URL:** `/api/schedules`
-- **Method:** `POST`
-- **Headers:** `Authorization: Bearer jwt_token`
-- **Body:**
-  ```json
-  {
-    "classId": "class_id",
-    "startTime": "2023-01-01T10:00:00.000Z",
-    "endTime": "2023-01-01T11:00:00.000Z",
-    "maxCapacity": 20
-  }
-  ```
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "message": "Schedule created successfully",
-    "data": {
-      "_id": "schedule_id",
-      "classId": "class_id",
-      "startTime": "2023-01-01T10:00:00.000Z",
-      "endTime": "2023-01-01T11:00:00.000Z",
-      "maxCapacity": 20,
-      "currentBookings": 0,
-      "createdAt": "2023-01-01T00:00:00.000Z",
-      "updatedAt": "2023-01-01T00:00:00.000Z"
-    }
-  }
-  ```
-
-### Update Schedule (Admin Only)
-- **URL:** `/api/schedules/:id`
-- **Method:** `PUT`
-- **Headers:** `Authorization: Bearer jwt_token`
-- **Body:**
-  ```json
-  {
-    "maxCapacity": 30
-  }
-  ```
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "message": "Schedule updated successfully",
-    "data": {
-      "_id": "schedule_id",
-      "classId": "class_id",
-      "startTime": "2023-01-01T10:00:00.000Z",
-      "endTime": "2023-01-01T11:00:00.000Z",
-      "maxCapacity": 30,
-      "currentBookings": 0,
-      "createdAt": "2023-01-01T00:00:00.000Z",
-      "updatedAt": "2023-01-01T00:00:00.000Z"
-    }
-  }
-  ```
-
-### Delete Schedule (Admin Only)
-- **URL:** `/api/schedules/:id`
-- **Method:** `DELETE`
-- **Headers:** `Authorization: Bearer jwt_token`
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "message": "Schedule deleted successfully"
-  }
-  ```
-
 ## Bookings
 
-### Get All Bookings for Current User
-- **URL:** `/api/bookings/my-bookings`
-- **Method:** `GET`
-- **Headers:** `Authorization: Bearer jwt_token`
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "data": [
-      {
-        "_id": "booking_id",
-        "userId": "user_id",
-        "scheduleId": "schedule_id",
-        "status": "confirmed",
-        "createdAt": "2023-01-01T00:00:00.000Z",
-        "updatedAt": "2023-01-01T00:00:00.000Z"
-      }
-    ]
-  }
-  ```
-
-### Get All Bookings for a Schedule (Admin Only)
-- **URL:** `/api/bookings/schedule/:scheduleId`
-- **Method:** `GET`
-- **Headers:** `Authorization: Bearer jwt_token`
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "data": [
-      {
-        "_id": "booking_id",
-        "userId": "user_id",
-        "scheduleId": "schedule_id",
-        "status": "confirmed",
-        "createdAt": "2023-01-01T00:00:00.000Z",
-        "updatedAt": "2023-01-01T00:00:00.000Z"
-      }
-    ]
-  }
-  ```
-
-### Create Booking (Customer Only)
+### Create Booking
 - **URL:** `/api/bookings`
 - **Method:** `POST`
-- **Headers:** `Authorization: Bearer jwt_token`
 - **Body:**
   ```json
   {
@@ -351,170 +181,57 @@
   }
   ```
 
-### Cancel Booking (Customer Only)
-- **URL:** `/api/bookings/:id/cancel`
-- **Method:** `PUT`
-- **Headers:** `Authorization: Bearer jwt_token`
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "message": "Booking cancelled successfully",
-    "data": {
-      "_id": "booking_id",
-      "userId": "user_id",
-      "scheduleId": "schedule_id",
-      "status": "cancelled",
-      "createdAt": "2023-01-01T00:00:00.000Z",
-      "updatedAt": "2023-01-01T00:00:00.000Z"
-    }
-  }
-  ```
-
-### Get Booking by ID
-- **URL:** `/api/bookings/:id`
+### Get All Bookings for Current User
+- **URL:** `/api/bookings/me`
 - **Method:** `GET`
-- **Headers:** `Authorization: Bearer jwt_token`
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "data": {
-      "_id": "booking_id",
-      "userId": "user_id",
-      "scheduleId": "schedule_id",
-      "status": "confirmed",
-      "createdAt": "2023-01-01T00:00:00.000Z",
-      "updatedAt": "2023-01-01T00:00:00.000Z"
-    }
-  }
-  ```
-
-## Statistics
-
-### Get Class Statistics (Admin Only)
-- **URL:** `/api/stats/classes`
-- **Method:** `GET`
-- **Headers:** `Authorization: Bearer jwt_token`
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "data": {
-      "totalClasses": 10,
-      "activeClasses": 8,
-      "totalSchedules": 20,
-      "completedSchedules": 5,
-      "cancelledSchedules": 2
-    }
-  }
-  ```
-
-### Get Booking Statistics (Admin Only)
-- **URL:** `/api/stats/bookings`
-- **Method:** `GET`
-- **Headers:** `Authorization: Bearer jwt_token`
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "data": {
-      "totalBookings": 100,
-      "confirmedBookings": 80,
-      "cancelledBookings": 20,
-      "averageBookingsPerClass": 10
-    }
-  }
-  ```
-
-### Get Revenue Statistics (Admin Only)
-- **URL:** `/api/stats/revenue`
-- **Method:** `GET`
-- **Headers:** `Authorization: Bearer jwt_token`
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "data": {
-      "totalRevenue": 5000,
-      "revenueByClass": [
-        {
-          "classId": "class_id",
-          "className": "Yoga",
-          "revenue": 2000
-        }
-      ]
-    }
-  }
-  ```
-
-### Get Instructor Statistics (Admin Only)
-- **URL:** `/api/stats/instructors`
-- **Method:** `GET`
-- **Headers:** `Authorization: Bearer jwt_token`
 - **Response:**
   ```json
   {
     "success": true,
     "data": [
       {
-        "instructorId": "instructor_id",
-        "instructorName": "John Doe",
-        "totalClasses": 5,
-        "totalSchedules": 10,
-        "totalBookings": 50
+        "_id": "booking_id",
+        "userId": "user_id",
+        "scheduleId": "schedule_id",
+        "status": "confirmed",
+        "createdAt": "2023-01-01T00:00:00.000Z",
+        "updatedAt": "2023-01-01T00:00:00.000Z"
       }
     ]
   }
   ```
 
-### Get Popular Classes (Admin Only)
-- **URL:** `/api/stats/popular-classes`
+## Membership
+
+### Get All Membership Plans
+- **URL:** `/api/memberships/plans`
 - **Method:** `GET`
-- **Headers:** `Authorization: Bearer jwt_token`
 - **Response:**
   ```json
   {
     "success": true,
     "data": [
       {
-        "classId": "class_id",
-        "className": "Yoga",
-        "totalBookings": 100,
-        "averageBookingsPerClass": 20
+        "id": "plan_id",
+        "name": "Monthly Membership",
+        "price": 99,
+        "durationDays": 30
       }
     ]
   }
   ```
 
-## Frontend API Usage Instructions
-
-### Authentication and Token
-- After successful login/registration, the frontend should store the returned token in localStorage.
-- For all subsequent API requests that require authentication, include the following in the header:
-  `Authorization: Bearer <token>`
-
-### User Information
-- **GET** `/api/auth/profile` Get information of the currently logged-in user.
-
-### Class Related
-- **GET** `/api/classes` Supports filtering by level, category, and instructor query parameters.
-- **GET** `/api/classes/:classId/schedules` Get all schedules under a specific class.
-
-### Schedule Related
-- **GET** `/api/schedules` Supports filtering by date, instructor, level, category, and classId query parameters.
-
-### Booking Related
-- **GET** `/api/bookings/me` Get all bookings for the current user.
-- **POST** `/api/bookings` Create a booking.
-- **DELETE** `/api/bookings/:bookingId` Cancel a booking.
-
-### Membership Related
-- **GET** `/api/memberships/plans` Get membership plans.
-- **GET** `/api/memberships/me/membership` Get current membership status.
-- **POST** `/api/memberships/me/cancel` Cancel membership.
-- **POST** `/api/memberships/me/renew` Renew membership.
-
-### Error Handling
-- 401 Unauthorized: The frontend will automatically redirect to the login page.
-- Other errors will be displayed as prompt messages on the page. 
+### Get Current User Membership Status
+- **URL:** `/api/memberships/me/membership`
+- **Method:** `GET`
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "data": {
+      "status": "active",
+      "type": "monthly",
+      "endDate": "2023-12-31T00:00:00.000Z"
+    }
+  }
+  ``` 
