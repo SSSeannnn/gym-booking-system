@@ -130,8 +130,8 @@ export default function Membership() {
             </span>
           </div>
           <div className="text-right">
-            <p className="text-sm text-gray-500">会员ID</p>
-            <p className="font-medium">{membership?.id}</p>
+            <p className="text-sm text-gray-500">Membership ID</p>
+            <p className="font-medium">{membership?.planId}</p>
           </div>
         </div>
 
