@@ -41,6 +41,7 @@ export interface Schedule {
   isBooked: boolean;
   level: 'beginner' | 'intermediate' | 'advanced';
   category: 'yoga' | 'HIIT' | 'Boxing';
+  room: string;
 }
 
 export interface ScheduleFilters {

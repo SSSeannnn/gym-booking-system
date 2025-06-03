@@ -180,7 +180,7 @@ export default function Schedule() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
-                  Location: {schedule.location}
+                  Room: {schedule.room}
                 </p>
                 <p className="flex items-center">
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -221,7 +221,7 @@ export default function Schedule() {
               <p><span className="font-medium">Instructor:</span> {typeof selectedSchedule.instructor === 'object' && selectedSchedule.instructor !== null
                 ? (selectedSchedule.instructor as { username?: string; name?: string }).username || (selectedSchedule.instructor as { username?: string; name?: string }).name || '未分配'
                 : selectedSchedule.instructor || '未分配'}</p>
-              <p><span className="font-medium">Location:</span> {selectedSchedule.location}</p>
+              <p><span className="font-medium">Room:</span> {selectedSchedule.room}</p>
             </div>
             {error && (
               <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
