@@ -250,24 +250,3 @@
     ]
   }
   ```
-
-## Main Data Model Dependencies
-
-- **User**: User information, role, membership information
-- **MembershipPlan**: Membership plan
-- **Class**: Class information
-- **Schedule**: Class schedule (associated with Class and Instructor)
-- **Booking**: Booking information (associated with User and Schedule)
-
-## Permission Description
-
-- **Public**: Accessible without login
-- **Requires User Authentication**: Must carry a valid JWT
-- **Admin Only**: Must login and be role admin
-- **Only for Booking Owner**: Must login and can only operate on their own booking
-
-## Notes
-
-- All core business has Jest automated test coverage to ensure interface correctness and robustness.
-- Membership, class, schedule, booking modules have implemented basic CRUD and business rule checks.
-- Key scenarios such as booking cancellation, permission checks, concurrent seat control have been tested. 
